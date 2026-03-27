@@ -7,523 +7,343 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
 
-  /* ============================================================
-     ROOT ACCESS COLOR BIBLE
-     ============================================================ */
   :root {
-    --void:      #050a0f;
-    --deep-navy: #080d14;
-    --circuit:   #1a2535;
-    --ice:       #e8f4ff;
-    --green:     #00ff41;
-    --cyan:      #00d4ff;
-    --gold:      #f5c842;
-    --red:       #ff2d2d;
-    --purple:    #9b59ff;
-    --orange:    #ff6b00;
-    --grey:      #3a4a5c;
+    --void:    #050a0f;
+    --maroon:  #780012;
+    --crimson: #b40018;
+    --red:     #ff2d2d;
+    --cyan:    #00d4ff;
+    --green:   #00ff41;
+    --gold:    #f5c842;
+    --grey:    #3a4a5c;
+    --ice:     #e8f4ff;
+    --circuit: #1a2535;
   }
 
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
 
   html, body {
-    width: 100%; height: 100%;
-    background: var(--void);
-    color: var(--ice);
-    font-family: 'Share Tech Mono', monospace;
-    overflow: hidden;
-    user-select: none;
+    width:100%; height:100%;
+    background:#000;
+    color:#fff;
+    font-family:'Share Tech Mono', monospace;
+    overflow:hidden;
+    user-select:none;
   }
 
-  /* ============================================================
-     BACKGROUNDS
-     ============================================================ */
-  #matrix-bg { position: fixed; inset: 0; opacity: 0.06; z-index: 0; }
+  #star-canvas { position:fixed; inset:0; z-index:0; }
 
-  .bg-glow {
-    position: fixed; inset: 0; z-index: 1;
+  .maroon-glow {
+    position:fixed; inset:0; z-index:1;
     background:
-      radial-gradient(ellipse 70% 60% at 50% 30%, rgba(0,212,255,0.08) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 50% at 15% 80%, rgba(0,255,65,0.05) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 40% at 85% 20%, rgba(245,200,66,0.04) 0%, transparent 60%);
-    pointer-events: none;
+      radial-gradient(ellipse 70% 60% at 50% 45%, rgba(120,0,18,0.55) 0%, rgba(80,0,10,0.35) 35%, rgba(30,0,4,0.2) 65%, transparent 100%),
+      radial-gradient(ellipse 40% 30% at 50% 45%, rgba(180,0,24,0.3) 0%, transparent 70%);
+    pointer-events:none;
   }
 
   .scanlines {
-    position: fixed; inset: 0; z-index: 2;
-    background: repeating-linear-gradient(to bottom,transparent 0px,transparent 3px,rgba(0,0,0,0.07) 3px,rgba(0,0,0,0.07) 4px);
-    pointer-events: none;
+    position:fixed; inset:0; z-index:2;
+    background:repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 4px);
+    pointer-events:none;
   }
 
-  /* ============================================================
-     CORNER BRACKETS
-     ============================================================ */
-  .corner { position: fixed; width: 28px; height: 28px; z-index: 20; opacity: 0.4; }
-  .corner.tl { top:16px; left:16px;  border-top:1px solid var(--cyan); border-left:1px solid var(--cyan); }
-  .corner.tr { top:16px; right:16px; border-top:1px solid var(--cyan); border-right:1px solid var(--cyan); }
-  .corner.bl { bottom:16px; left:16px;  border-bottom:1px solid var(--cyan); border-left:1px solid var(--cyan); }
-  .corner.br { bottom:16px; right:16px; border-bottom:1px solid var(--cyan); border-right:1px solid var(--cyan); }
+  .corner { position:fixed; width:32px; height:32px; z-index:20; }
+  .corner.tl { top:20px; left:20px;   border-top:1px solid rgba(180,0,24,0.6); border-left:1px solid rgba(180,0,24,0.6); }
+  .corner.tr { top:20px; right:20px;  border-top:1px solid rgba(180,0,24,0.6); border-right:1px solid rgba(180,0,24,0.6); }
+  .corner.bl { bottom:20px; left:20px;  border-bottom:1px solid rgba(180,0,24,0.6); border-left:1px solid rgba(180,0,24,0.6); }
+  .corner.br { bottom:20px; right:20px; border-bottom:1px solid rgba(180,0,24,0.6); border-right:1px solid rgba(180,0,24,0.6); }
 
-  /* ============================================================
-     LIVE BADGE
-     ============================================================ */
   .live-badge {
-    position: fixed; top:22px; right:28px;
+    position:fixed; top:24px; right:28px; z-index:30;
     display:flex; align-items:center; gap:7px;
-    font-size:9px; letter-spacing:4px; color:var(--green);
-    text-transform:uppercase; z-index:20;
-    animation: fadeDown 1s ease both;
+    font-size:9px; letter-spacing:4px; color:var(--green); text-transform:uppercase;
+    animation:fadeDown 1.2s ease both;
   }
   .live-dot { width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 10px var(--green); animation:blink 1.2s ease infinite; }
 
-  /* ============================================================
-     ARC + MAP CANVAS
-     ============================================================ */
-  #world-map { position:fixed; inset:0; z-index:3; width:100%; height:100%; opacity:0.12; }
-  #arc-canvas { position:fixed; inset:0; z-index:4; width:100%; height:100%; pointer-events:none; }
-
-  /* ============================================================
-     MAIN STAGE
-     ============================================================ */
   .stage {
-    position: relative; z-index: 10;
-    width: 100vw; height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    padding: 60px 20px 80px;
-    overflow-y: auto;
+    position:relative; z-index:10;
+    width:100vw; height:100vh;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    gap:0; padding:40px 20px 80px;
   }
 
-  /* ============================================================
-     HEADER
-     ============================================================ */
-  .header {
-    display: flex; flex-direction: column; align-items: center; gap: 6px;
-    margin-bottom: 28px;
-    animation: fadeDown 1s ease both;
-  }
-
-  .header-eyebrow {
-    font-size: clamp(8px,2vw,10px);
-    letter-spacing: clamp(4px,2vw,8px);
-    color: var(--cyan);
-    opacity: 0.6;
-    text-transform: uppercase;
-  }
-
+  /* ROOT ACCESS */
   .header-rootaccess {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(16px,4vw,36px);
-    font-weight: 900;
-    letter-spacing: clamp(6px,2vw,14px);
-    text-transform: uppercase;
-    line-height: 1;
+    font-family:'Orbitron', sans-serif;
+    font-size:clamp(11px,2.2vw,20px);
+    font-weight:700;
+    letter-spacing:clamp(8px,2.5vw,18px);
+    text-transform:uppercase;
+    margin-bottom:6px;
+    animation:fadeDown 1s ease 0.1s both;
   }
-  .header-rootaccess .root { color: #ffffff; text-shadow: 0 0 20px rgba(255,255,255,0.3); }
-  .header-rootaccess .access { color: #ff2d2d; text-shadow: 0 0 20px rgba(255,45,45,0.5); }
+  .ra-root   { color:#ffffff; }
+  .ra-access { color:var(--red); margin-left:8px; }
 
+  /* GENESIS */
   .header-genesis {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(60px,18vw,160px);
-    font-weight: 900;
-    letter-spacing: 4px;
-    color: #00d4ff;
-    text-transform: uppercase;
-    text-shadow: 0 0 40px rgba(0,212,255,0.7), 0 0 80px rgba(0,212,255,0.4), 0 0 160px rgba(0,212,255,0.2);
-    line-height: 0.95;
-    margin-top: 2px;
-  }
-
-  /* ROOT ACCESS — white and red classic */
-  .header-rootaccess {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(14px,3.5vw,32px);
-    font-weight: 900;
-    letter-spacing: clamp(6px,2vw,16px);
-    text-transform: uppercase;
-    line-height: 1;
-  }
-  .header-rootaccess .root   { color: #ffffff; text-shadow: 0 0 20px rgba(255,255,255,0.35); }
-  .header-rootaccess .access { color: #ff2d2d; text-shadow: 0 0 20px rgba(255,45,45,0.55); }
-
-  /* GENESIS — massive single color */
-  .header-genesis {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(58px,17vw,156px);
-    font-weight: 900;
-    letter-spacing: 2px;
-    color: #00d4ff;
-    text-transform: uppercase;
+    font-family:'Orbitron', sans-serif;
+    font-size:clamp(64px,18vw,172px);
+    font-weight:900;
+    letter-spacing:clamp(2px,0.5vw,6px);
+    text-transform:uppercase;
+    color:#ffffff;
+    line-height:0.92;
     text-shadow:
-      0 0 40px rgba(0,212,255,0.75),
-      0 0 80px rgba(0,212,255,0.45),
-      0 0 160px rgba(0,212,255,0.2);
-    line-height: 0.92;
-    margin-top: 4px;
+      0 0 20px rgba(180,0,24,0.9),
+      0 0 50px rgba(140,0,18,0.7),
+      0 0 100px rgba(100,0,12,0.5),
+      0 0 200px rgba(60,0,8,0.3);
+    animation:fadeDown 1s ease 0.2s both;
+    margin-bottom:6px;
   }
 
-  .header-sub {
-    font-size: clamp(9px,2.2vw,11px);
-    letter-spacing: clamp(3px,1.5vw,6px);
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-top: 4px;
+  /* Tagline */
+  .tagline {
+    font-size:clamp(8px,1.8vw,11px);
+    letter-spacing:clamp(3px,1.5vw,7px);
+    color:var(--green);
+    text-transform:lowercase;
+    margin-bottom:36px;
+    animation:fadeDown 1s ease 0.35s both;
+    opacity:0.85;
   }
 
-  .header-line {
-    width: min(400px, 85vw); height: 1px;
-    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
-    margin-top: 8px;
+  /* Countdown */
+  .countdown-wrap {
+    display:flex; flex-direction:column; align-items:center; gap:14px;
+    animation:fadeUp 1s ease 0.5s both;
   }
 
-  /* ============================================================
-     CLASSIFIED BADGE
-     ============================================================ */
-  .classified {
-    display: flex; align-items: center; gap: 10px;
-    background: rgba(255,45,45,0.06);
-    border: 1px solid rgba(255,45,45,0.25);
-    border-radius: 2px;
-    padding: 6px 18px;
-    margin-bottom: 24px;
-    animation: fadeDown 1s ease 0.2s both;
-  }
-  .classified-dot { width:6px; height:6px; border-radius:50%; background:var(--red); box-shadow:0 0 8px var(--red); animation:blink 0.8s ease infinite; }
-  .classified-text { font-size:9px; letter-spacing:4px; color:var(--red); text-transform:uppercase; }
-
-  /* ============================================================
-     COUNTDOWN SECTION
-     ============================================================ */
-  .countdown-section {
-    display: flex; flex-direction: column; align-items: center; gap: 12px;
-    margin-bottom: 28px;
-    animation: fadeUp 1s ease 0.3s both;
+  .countdown-eyebrow {
+    font-size:clamp(7px,1.8vw,10px);
+    letter-spacing:clamp(4px,2vw,8px);
+    color:rgba(255,255,255,0.3);
+    text-transform:uppercase;
   }
 
-  .countdown-label {
-    font-size: clamp(8px,2vw,9px);
-    letter-spacing: clamp(3px,1.5vw,6px);
-    color: var(--grey);
-    text-transform: uppercase;
-  }
-
-  .countdown-blocks {
-    display: flex;
-    gap: clamp(10px,3vw,24px);
-    align-items: center;
-  }
-
-  .countdown-block {
-    display: flex; flex-direction: column; align-items: center; gap: 4px;
-  }
-
-  .countdown-num {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(36px,10vw,88px);
-    font-weight: 900;
-    line-height: 1;
-    color: var(--cyan);
-    text-shadow: 0 0 30px rgba(0,212,255,0.5), 0 0 60px rgba(0,212,255,0.25);
-    min-width: clamp(60px,12vw,120px);
-    text-align: center;
-    transition: all 0.3s ease;
-  }
-
-  .countdown-num.tick { animation: num-tick 0.3s ease; }
-
-  .countdown-unit {
-    font-size: clamp(7px,1.8vw,9px);
-    letter-spacing: clamp(2px,1vw,4px);
-    color: var(--grey);
-    text-transform: uppercase;
-  }
-
-  .countdown-sep {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(24px,6vw,56px);
-    font-weight: 900;
-    color: var(--circuit);
-    margin-bottom: 20px;
-    animation: blink 1s ease infinite;
-  }
-
-  /* Progress bar under countdown */
-  .launch-progress {
-    width: min(500px, 88vw);
-    display: flex; flex-direction: column; gap: 6px;
-  }
-
-  .launch-progress-header {
-    display: flex; justify-content: space-between;
-    font-size: clamp(7px,2vw,9px); letter-spacing: 2px; color: var(--grey);
-    text-transform: uppercase;
-  }
-
-  .launch-pct { font-family:'Orbitron',sans-serif; font-size:10px; font-weight:700; color:var(--gold); }
-
-  .launch-track { width:100%; height:3px; background:var(--circuit); border-radius:2px; overflow:hidden; }
-  .launch-fill {
-    height:100%; width:0%;
-    background: linear-gradient(90deg, var(--gold), var(--cyan));
-    border-radius:2px;
-    transition: width 1s ease;
-    box-shadow: 0 0 10px rgba(0,212,255,0.4);
+  .countdown-box {
+    background:rgba(0,0,0,0.35);
+    border:1px solid rgba(180,0,24,0.4);
+    padding:clamp(16px,3vw,30px) clamp(24px,5vw,72px);
+    display:flex; gap:clamp(14px,4vw,44px); align-items:center;
     position:relative;
   }
-  .launch-fill::after {
-    content:''; position:absolute; top:0; left:-60px; width:60px; height:100%;
+
+  .countdown-box::before {
+    content:'';
+    position:absolute; top:-1px; left:15%; right:15%; height:1px;
+    background:linear-gradient(90deg, transparent, var(--crimson), var(--red), var(--crimson), transparent);
+    box-shadow:0 0 12px rgba(255,45,45,0.6);
+  }
+
+  .cd-block { display:flex; flex-direction:column; align-items:center; gap:5px; }
+
+  .cd-num {
+    font-family:'Orbitron', sans-serif;
+    font-size:clamp(38px,10vw,92px);
+    font-weight:900;
+    line-height:1;
+    color:#ffffff;
+    text-shadow:0 0 20px rgba(180,0,24,0.8), 0 0 50px rgba(140,0,18,0.5);
+    min-width:clamp(52px,10vw,116px);
+    text-align:center;
+  }
+
+  .cd-num.tick { animation:num-tick 0.35s ease; }
+
+  .cd-unit {
+    font-size:clamp(7px,1.5vw,9px);
+    letter-spacing:clamp(2px,1vw,5px);
+    color:rgba(255,255,255,0.28);
+    text-transform:uppercase;
+  }
+
+  .cd-sep {
+    font-family:'Orbitron', sans-serif;
+    font-size:clamp(26px,7vw,68px);
+    font-weight:900;
+    color:rgba(180,0,24,0.5);
+    margin-bottom:clamp(14px,2vw,26px);
+    animation:blink 1s ease infinite;
+  }
+
+  /* Launch bar */
+  .launch-bar {
+    width:min(520px,88vw);
+    background:linear-gradient(90deg, var(--crimson), var(--red), var(--crimson));
+    padding:13px 0;
+    text-align:center;
+    font-family:'Orbitron', sans-serif;
+    font-size:clamp(9px,1.8vw,12px);
+    font-weight:700;
+    letter-spacing:clamp(3px,1.2vw,7px);
+    color:#ffffff;
+    text-transform:uppercase;
+    box-shadow:0 0 30px rgba(180,0,24,0.5), 0 0 60px rgba(180,0,24,0.2);
+    position:relative; overflow:hidden;
+  }
+
+  .launch-bar::after {
+    content:''; position:absolute; top:0; left:-100%; width:60%; height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);
+    animation:shimmer-bar 3s linear infinite;
+  }
+
+  /* Sub row */
+  .sub-row {
+    display:flex; gap:clamp(18px,4vw,48px); margin-top:10px;
+    animation:fadeUp 1s ease 0.8s both;
+  }
+
+  .sub-item { display:flex; flex-direction:column; align-items:center; gap:3px; }
+  .sub-val {
+    font-family:'Orbitron', sans-serif;
+    font-size:clamp(13px,3.5vw,24px);
+    font-weight:700; color:#ffffff;
+    text-shadow:0 0 15px rgba(180,0,24,0.6);
+  }
+  .sub-lbl { font-size:clamp(7px,1.4vw,8px); letter-spacing:3px; color:rgba(255,255,255,0.28); text-transform:uppercase; }
+
+  /* Progress */
+  .sub-progress {
+    width:min(520px,88vw);
+    display:flex; flex-direction:column; gap:5px; margin-top:5px;
+    animation:fadeUp 1s ease 0.9s both;
+  }
+  .sp-header { display:flex; justify-content:space-between; font-size:clamp(7px,1.4vw,8px); letter-spacing:2px; color:rgba(255,255,255,0.22); text-transform:uppercase; }
+  .sp-pct { font-family:'Orbitron',sans-serif; font-size:9px; font-weight:700; color:var(--red); }
+  .sp-track { width:100%; height:2px; background:rgba(180,0,24,0.18); }
+  .sp-fill {
+    height:100%; width:0%;
+    background:linear-gradient(90deg, var(--crimson), var(--red));
+    box-shadow:0 0 8px rgba(255,45,45,0.5);
+    transition:width 1.2s ease; position:relative;
+  }
+  .sp-fill::after {
+    content:''; position:absolute; top:0; left:-40px; width:40px; height:100%;
     background:linear-gradient(90deg,transparent,rgba(255,255,255,0.5),transparent);
     animation:shimmer 2s linear infinite;
   }
 
-  /* ============================================================
-     DIVIDER
-     ============================================================ */
-  .section-divider {
-    width: min(500px,88vw); height: 1px;
-    background: linear-gradient(90deg, transparent, var(--circuit), transparent);
-    margin: 16px 0;
+  /* Bottom */
+  .bottom-info {
+    position:fixed; bottom:42px; left:50%; transform:translateX(-50%);
+    font-size:clamp(7px,1.4vw,9px); letter-spacing:4px;
+    color:rgba(255,255,255,0.18); text-transform:uppercase; z-index:20; white-space:nowrap;
   }
+  .bottom-info span { color:rgba(255,45,45,0.55); }
+  .next-sync { position:fixed; bottom:42px; right:22px; font-size:8px; letter-spacing:2px; color:rgba(255,255,255,0.18); z-index:20; }
 
-  /* ============================================================
-     SUB COUNTER SECTION
-     ============================================================ */
-  .sub-section {
-    display: flex; flex-direction: column; align-items: center; gap: 6px;
-    animation: fadeUp 1s ease 0.5s both;
-  }
-
-  .sub-label { font-size:clamp(7px,2vw,9px); letter-spacing:clamp(2px,1.5vw,5px); color:var(--grey); text-transform:uppercase; }
-
-  .sub-count {
-    font-family: 'Orbitron', sans-serif;
-    font-size: clamp(32px,9vw,72px);
-    font-weight: 900;
-    line-height: 1;
-    color: var(--green);
-    text-shadow: 0 0 30px rgba(0,255,65,0.4), 0 0 60px rgba(0,255,65,0.2);
-    letter-spacing: -2px;
-  }
-  .sub-count.tick { animation: sub-tick 0.4s ease; }
-
-  /* Goal bar */
-  .sub-goal {
-    width: min(500px,88vw);
-    display: flex; flex-direction: column; gap: 6px;
-    margin-top: 4px;
-  }
-
-  .sub-goal-header { display:flex; justify-content:space-between; font-size:clamp(7px,2vw,9px); letter-spacing:2px; color:var(--grey); text-transform:uppercase; }
-  .sub-goal-pct { font-family:'Orbitron',sans-serif; font-size:10px; font-weight:700; color:var(--gold); }
-
-  .sub-track { width:100%; height:4px; background:var(--circuit); border-radius:2px; overflow:hidden; }
-  .sub-fill {
-    height:100%; width:0%;
-    background: linear-gradient(90deg, var(--green), var(--cyan));
-    border-radius:2px;
-    transition: width 1.2s cubic-bezier(0.25,1,0.5,1);
-    box-shadow: 0 0 10px rgba(0,255,65,0.4);
-    position:relative;
-  }
-  .sub-fill::after {
-    content:''; position:absolute; top:0; left:-60px; width:60px; height:100%;
-    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);
-    animation:shimmer 2.5s linear infinite;
-  }
-
-  .sub-needed { font-size:clamp(7px,2vw,8px); letter-spacing:1px; color:var(--grey); text-align:right; }
-  .sub-needed span { color:var(--gold); }
-
-  /* ============================================================
-     GHOST MESSAGE
-     ============================================================ */
-  .ghost-msg {
-    display: flex; align-items: flex-start; gap: 10px;
-    background: rgba(0,212,255,0.04);
-    border: 1px solid rgba(0,212,255,0.12);
-    border-left: 2px solid var(--cyan);
-    border-radius: 2px;
-    padding: 10px 16px;
-    max-width: min(500px,88vw);
-    margin-top: 8px;
-    animation: fadeUp 1s ease 0.7s both;
-  }
-  .ghost-tag { font-size:9px; letter-spacing:3px; color:var(--cyan); flex-shrink:0; text-transform:uppercase; }
-  .ghost-text { font-size:clamp(8px,2.2vw,10px); letter-spacing:1px; color:var(--grey); line-height:1.6; }
-
-  /* ============================================================
-     BOTTOM BAR / TICKER
-     ============================================================ */
+  /* Ticker */
   .ticker-bar {
-    position: fixed; bottom:0; left:0; right:0; z-index:20;
-    height: 34px;
-    background: rgba(5,10,15,0.95);
-    border-top: 1px solid rgba(0,212,255,0.12);
-    display: flex; align-items: center; overflow: hidden;
+    position:fixed; bottom:0; left:0; right:0; z-index:20;
+    height:32px; background:rgba(0,0,0,0.92);
+    border-top:1px solid rgba(180,0,24,0.18);
+    display:flex; align-items:center; overflow:hidden;
   }
   .ticker-label {
     flex-shrink:0; padding:0 14px;
-    font-size:8px; letter-spacing:4px; color:var(--cyan);
-    border-right:1px solid rgba(0,212,255,0.15);
+    font-size:7px; letter-spacing:4px; color:var(--red);
+    border-right:1px solid rgba(180,0,24,0.18);
     height:100%; display:flex; align-items:center;
-    background:rgba(0,212,255,0.03);
-    text-transform:uppercase;
+    background:rgba(180,0,24,0.04); text-transform:uppercase;
   }
   .ticker-scroll { flex:1; overflow:hidden; }
   .ticker-inner {
-    display:flex; gap:60px; white-space:nowrap;
-    font-size:9px; letter-spacing:2px; color:var(--grey);
-    animation: ticker-move 25s linear infinite;
+    display:flex; gap:50px; white-space:nowrap;
+    font-size:8px; letter-spacing:2px; color:rgba(255,255,255,0.18);
+    animation:ticker-move 28s linear infinite;
   }
-  .ticker-inner span { color:var(--cyan); }
+  .ticker-inner span { color:rgba(255,45,45,0.65); }
 
-  /* ============================================================
-     CHANNEL TAG + NEXT SYNC
-     ============================================================ */
-  .channel-tag {
-    position:fixed; bottom:42px; left:50%; transform:translateX(-50%);
-    font-size:clamp(7px,2vw,9px); letter-spacing:4px; color:var(--grey);
-    text-transform:uppercase; z-index:20; white-space:nowrap;
-  }
-  .channel-tag span { color:var(--cyan); }
-  .next-sync { position:fixed; bottom:42px; right:20px; font-size:8px; letter-spacing:2px; color:var(--grey); z-index:20; }
-
-  /* ============================================================
-     ANIMATIONS
-     ============================================================ */
-  @keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes fadeUp   { from{opacity:0;transform:translateY(20px)}  to{opacity:1;transform:translateY(0)} }
-  @keyframes blink    { 0%,100%{opacity:1} 50%{opacity:0.2} }
-  @keyframes shimmer  { from{left:-60px} to{left:110%} }
+  /* Animations */
+  @keyframes fadeDown { from{opacity:0;transform:translateY(-24px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes fadeUp   { from{opacity:0;transform:translateY(24px)}  to{opacity:1;transform:translateY(0)} }
+  @keyframes blink    { 0%,100%{opacity:1} 50%{opacity:0.15} }
+  @keyframes shimmer  { from{left:-40px} to{left:110%} }
+  @keyframes shimmer-bar { from{left:-100%} to{left:200%} }
   @keyframes ticker-move { from{transform:translateX(0)} to{transform:translateX(-50%)} }
-
   @keyframes num-tick {
-    0%  { color:var(--cyan); text-shadow:0 0 30px rgba(0,212,255,0.5); }
-    40% { color:#ffffff; text-shadow:0 0 60px rgba(0,212,255,1), 0 0 120px rgba(0,212,255,0.5); }
-    100%{ color:var(--cyan); text-shadow:0 0 30px rgba(0,212,255,0.5); }
-  }
-
-  @keyframes sub-tick {
-    0%  { color:var(--green); }
-    40% { color:#ffffff; text-shadow:0 0 60px rgba(0,255,65,1); }
-    100%{ color:var(--green); }
+    0%  { color:#ffffff; text-shadow:0 0 20px rgba(180,0,24,0.8),0 0 50px rgba(140,0,18,0.5); }
+    40% { color:#ff8080; text-shadow:0 0 40px rgba(255,45,45,1),0 0 80px rgba(180,0,24,0.8); }
+    100%{ color:#ffffff; text-shadow:0 0 20px rgba(180,0,24,0.8),0 0 50px rgba(140,0,18,0.5); }
   }
 </style>
 </head>
 <body>
 
-<!-- Background layers -->
-<canvas id="matrix-bg"></canvas>
-<div class="bg-glow"></div>
+<canvas id="star-canvas"></canvas>
+<div class="maroon-glow"></div>
 <div class="scanlines"></div>
-<canvas id="world-map"></canvas>
-<canvas id="arc-canvas"></canvas>
 
-<!-- Corner brackets -->
 <div class="corner tl"></div>
 <div class="corner tr"></div>
 <div class="corner bl"></div>
 <div class="corner br"></div>
 
-<!-- Live badge -->
 <div class="live-badge"><div class="live-dot"></div>SIGNAL ACTIVE</div>
-
-<!-- Channel -->
-<div class="channel-tag">@<span>TheITNomad</span> // ROOT ACCESS UNIVERSE</div>
+<div class="bottom-info">@<span>TheITNomad</span> // rootaccess.gg</div>
 <div class="next-sync" id="next-sync">SYNC IN 60s</div>
 
-<!-- Main -->
 <div class="stage">
 
-  <!-- Header -->
-  <div class="header">
-    <div class="header-rootaccess"><span class="root">ROOT&nbsp;</span><span class="access">ACCESS</span></div>
-    <div class="header-genesis">GENESIS</div>
-    <div class="header-sub">The world is the target. GENESIS is the key.</div>
-    <div class="header-line"></div>
+  <div class="header-rootaccess">
+    <span class="ra-root">ROOT</span><span class="ra-access">ACCESS</span>
   </div>
 
-  <!-- Classified badge -->
-  <div class="classified">
-    <div class="classified-dot"></div>
-    <div class="classified-text">ACCESS RESTRICTED — LAUNCH IMMINENT</div>
-  </div>
+  <div class="header-genesis">GENESIS</div>
 
-  <!-- Countdown -->
-  <div class="countdown-section">
-    <div class="countdown-label">MISSION GOES LIVE IN</div>
-    <div class="countdown-blocks">
-      <div class="countdown-block">
-        <div class="countdown-num" id="cd-days">00</div>
-        <div class="countdown-unit">Days</div>
-      </div>
-      <div class="countdown-sep">:</div>
-      <div class="countdown-block">
-        <div class="countdown-num" id="cd-hours">00</div>
-        <div class="countdown-unit">Hours</div>
-      </div>
-      <div class="countdown-sep">:</div>
-      <div class="countdown-block">
-        <div class="countdown-num" id="cd-mins">00</div>
-        <div class="countdown-unit">Minutes</div>
-      </div>
-      <div class="countdown-sep">:</div>
-      <div class="countdown-block">
-        <div class="countdown-num" id="cd-secs">00</div>
-        <div class="countdown-unit">Seconds</div>
-      </div>
+  <!-- ============================================================
+       CHANGE TAGLINE HERE
+       ============================================================ -->
+  <div class="tagline">this is only the beginning</div>
+
+  <div class="countdown-wrap">
+    <div class="countdown-eyebrow">MISSION GOES LIVE IN</div>
+
+    <div class="countdown-box">
+      <div class="cd-block"><div class="cd-num" id="cd-days">00</div><div class="cd-unit">Days</div></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-block"><div class="cd-num" id="cd-hours">00</div><div class="cd-unit">Hours</div></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-block"><div class="cd-num" id="cd-mins">00</div><div class="cd-unit">Minutes</div></div>
+      <div class="cd-sep">:</div>
+      <div class="cd-block"><div class="cd-num" id="cd-secs">00</div><div class="cd-unit">Seconds</div></div>
     </div>
 
-    <!-- Launch progress bar -->
-    <div class="launch-progress">
-      <div class="launch-progress-header">
-        <span>LAUNCH SEQUENCE</span>
-        <span class="launch-pct" id="launch-pct">0%</span>
-      </div>
-      <div class="launch-track"><div class="launch-fill" id="launch-fill"></div></div>
-    </div>
-  </div>
-
-  <div class="section-divider"></div>
-
-  <!-- Sub counter -->
-  <div class="sub-section">
-    <div class="sub-label">SUBSCRIBERS ONLINE</div>
-    <div class="sub-count" id="sub-count">––––</div>
-
-    <div class="sub-goal">
-      <div class="sub-goal-header">
-        <!-- ============================================================
-             CHANGE GOAL HERE — update the number below
-             ============================================================ -->
-        <span>OPERATION: <span id="goal-label">50</span> SUBS</span>
-        <span class="sub-goal-pct" id="sub-pct">0%</span>
-      </div>
-      <div class="sub-track"><div class="sub-fill" id="sub-fill"></div></div>
-      <div class="sub-needed">NEEDED: <span id="sub-needed">––</span></div>
-    </div>
-  </div>
-
-  <!-- Ghost message -->
-  <div class="ghost-msg">
-    <div class="ghost-tag">Ghost //</div>
     <!-- ============================================================
-         CHANGE GHOST MESSAGE HERE — update the text below
+         CHANGE LAUNCH MESSAGE HERE
          ============================================================ -->
-    <div class="ghost-text">Something big is coming. Stay off the grid. When the clock hits zero — GENESIS goes live. You'll want to be there.</div>
+    <div class="launch-bar">ACCESS RESTRICTED — LAUNCH IMMINENT</div>
+  </div>
+
+  <div class="sub-row">
+    <div class="sub-item"><div class="sub-val" id="sub-count">––</div><div class="sub-lbl">Subscribers</div></div>
+    <div class="sub-item"><div class="sub-val" id="view-count">––</div><div class="sub-lbl">Total Views</div></div>
+    <div class="sub-item"><div class="sub-val" id="video-count">––</div><div class="sub-lbl">Videos</div></div>
+  </div>
+
+  <div class="sub-progress">
+    <div class="sp-header">
+      <!-- ============================================================
+           CHANGE SUB GOAL HERE — update SUB_GOAL in JS too
+           ============================================================ -->
+      <span>OPERATION: <span id="goal-label">50</span> SUBS</span>
+      <span class="sp-pct" id="sub-pct">0%</span>
+    </div>
+    <div class="sp-track"><div class="sp-fill" id="sub-fill"></div></div>
   </div>
 
 </div>
 
-<!-- Ticker -->
 <div class="ticker-bar">
   <div class="ticker-label">INTEL</div>
   <div class="ticker-scroll">
     <!-- ============================================================
-         CHANGE TICKER TEXT HERE — duplicate items for seamless loop
+         CHANGE TICKER TEXT HERE
          ============================================================ -->
     <div class="ticker-inner">
       <span>GENESIS</span> // LAUNCHING SOON //
@@ -542,127 +362,106 @@
 
 <script>
 // ============================================================
-// CONFIG — CHANGE THESE VALUES
+// CONFIG — CHANGE THESE
 // ============================================================
 
-// LAUNCH DATE — set your target launch date here
-// Format: 'YYYY-MM-DDTHH:MM:SS' in your local time
-// Current setting: 6 weeks from now
+// LAUNCH DATE — 6 weeks from today
+// To set a fixed date use: new Date('2026-05-07T00:00:00')
 const LAUNCH_DATE = new Date(Date.now() + 42 * 24 * 60 * 60 * 1000);
 
-// YouTube API — paste your key and channel ID here
+// YouTube API
 const API_KEY    = 'AIzaSyC7o4QatTDalAcKFBc30CLEyrsPonSrE08';
 const CHANNEL_ID = 'UCngdjivpUyeBYwyFm_pxTfQ';
 
-// Sub goal — change this number to update the goal
+// Sub goal — change this number
 const SUB_GOAL = 50;
 
-// How often to sync YouTube data (seconds)
+// How often to sync YouTube (seconds)
 const SYNC_INTERVAL = 600;
 
 // ============================================================
-// STATE
-// ============================================================
-let countdown    = SYNC_INTERVAL;
-let prevSubs     = null;
-
-// ============================================================
-// MATRIX RAIN
+// STARFIELD
 // ============================================================
 (function(){
-  const canvas = document.getElementById('matrix-bg');
-  const ctx = canvas.getContext('2d');
-  let cols, drops;
-  const chars = '01アイウエオカキクケコ#$%&ハヒフヘホGENESIS';
-  function resize(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; cols=Math.floor(canvas.width/16); drops=Array(cols).fill(1); }
-  function draw(){
-    ctx.fillStyle='rgba(5,10,15,0.05)'; ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle='#00ff41'; ctx.font='13px Share Tech Mono';
-    drops.forEach((y,i)=>{ const ch=chars[Math.floor(Math.random()*chars.length)]; ctx.fillText(ch,i*16,y*16); if(y*16>canvas.height&&Math.random()>0.975)drops[i]=0; drops[i]++; });
+  const canvas = document.getElementById('star-canvas');
+  const ctx    = canvas.getContext('2d');
+  let stars    = [];
+
+  function resize(){
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    initStars();
   }
-  resize(); window.addEventListener('resize',resize); setInterval(draw,55);
+
+  function initStars(){
+    stars = [];
+    const count = Math.floor((canvas.width * canvas.height) / 3800);
+    for(let i = 0; i < count; i++){
+      const t = Math.random();
+      let color;
+      if(t < 0.60)      color = [255,255,255];
+      else if(t < 0.72) color = [200,220,255];
+      else if(t < 0.82) color = [0,212,255];
+      else if(t < 0.92) color = [255,100,80];
+      else               color = [255,180,120];
+
+      stars.push({
+        x:       Math.random() * canvas.width,
+        y:       Math.random() * canvas.height,
+        size:    Math.random() < 0.85 ? 1 : Math.random() < 0.7 ? 1.5 : 2.5,
+        alpha:   0.3 + Math.random() * 0.7,
+        phase:   Math.random() * Math.PI * 2,
+        speed:   0.005 + Math.random() * 0.02,
+        color,
+      });
+    }
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    stars.forEach(s=>{
+      s.phase += s.speed;
+      const a = s.alpha * (0.5 + 0.5 * Math.sin(s.phase));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.size, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${s.color[0]},${s.color[1]},${s.color[2]},${a.toFixed(2)})`;
+      ctx.fill();
+      // Glow for bigger stars
+      if(s.size > 1.8){
+        const g = ctx.createRadialGradient(s.x,s.y,0,s.x,s.y,s.size*5);
+        g.addColorStop(0, `rgba(${s.color[0]},${s.color[1]},${s.color[2]},${(a*0.3).toFixed(2)})`);
+        g.addColorStop(1, `rgba(${s.color[0]},${s.color[1]},${s.color[2]},0)`);
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(s.x,s.y,s.size*5,0,Math.PI*2); ctx.fill();
+      }
+    });
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+  setInterval(draw, 40);
 })();
 
 // ============================================================
-// WORLD MAP DOTS
-// ============================================================
-(function(){
-  const canvas = document.getElementById('world-map');
-  const ctx = canvas.getContext('2d');
-  const CITIES = [
-    [-74,40.7],[-87.6,41.8],[-118.2,34],[-122.4,37.8],[-77,38.9],[-104.9,39.7],
-    [-95.4,29.7],[-112.1,33.4],[-80.2,25.8],[-90,30],[-73.6,45.5],[-123,49.3],
-    [-99.1,19.4],[-79.4,43.7],[-157.8,21.3],[-149.9,61.2],
-    [-0.1,51.5],[2.3,48.9],[13.4,52.5],[37.6,55.8],[18.1,59.3],[10.7,59.9],
-    [12.6,55.7],[4.9,52.4],[2.2,41.4],[12.5,41.9],[23.7,37.9],[28.9,41],
-    [16.4,48.2],[14.4,50.1],[19.1,47.5],[21,52.2],[24.9,60.2],[25.3,54.7],
-    [103.8,1.3],[114.2,22.3],[121.5,31.2],[116.4,39.9],[139.7,35.7],[126.9,37.5],
-    [100.5,13.7],[106.8,10.8],[77.2,28.6],[72.8,18.9],[88.4,22.6],[67.1,24.9],
-    [69.3,41.3],[55.3,25.2],[51.4,35.7],[44.4,33.3],[36.8,34.9],
-    [3.4,6.5],[31,30],[36.8,-1.3],[18.4,-33.9],[28.1,-25.7],[32.6,0.3],
-    [-43.2,-22.9],[-58.4,-34.6],[-77.1,-12.1],[-70.7,-33.4],[-74.1,4.7],
-    [151.2,-33.9],[144.9,-37.8],[153,-27.5],[172.6,-43.5],[174.8,-36.9],
-  ];
-  let pulsingDots=[]; let dotTimer=0;
-  function project(lng,lat,W,H){ const x=(lng+180)/360*W; const latRad=lat*Math.PI/180; const mercN=Math.log(Math.tan(Math.PI/4+latRad/2)); const y=H/2-mercN*W/(2*Math.PI); return{x,y}; }
-  function resize(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
-  resize(); window.addEventListener('resize',resize);
-  function draw(){
-    const W=canvas.width,H=canvas.height; ctx.clearRect(0,0,W,H);
-    dotTimer++; if(dotTimer%50===0){ const c=CITIES[Math.floor(Math.random()*CITIES.length)]; pulsingDots.push({lng:c[0],lat:c[1],r:0,maxR:20,life:1}); }
-    CITIES.forEach(([lng,lat])=>{ const{x,y}=project(lng,lat,W,H); ctx.beginPath(); ctx.arc(x,y,1.5,0,Math.PI*2); ctx.fillStyle='rgba(0,212,255,0.4)'; ctx.fill(); });
-    pulsingDots=pulsingDots.filter(d=>{ const{x,y}=project(d.lng,d.lat,W,H); d.r+=0.5; d.life=Math.max(0,1-d.r/d.maxR); ctx.beginPath(); ctx.arc(x,y,d.r,0,Math.PI*2); ctx.strokeStyle=`rgba(0,212,255,${(d.life*0.4).toFixed(2)})`; ctx.lineWidth=1; ctx.stroke(); return d.r<d.maxR; });
-  }
-  setInterval(draw,40);
-})();
-
-// ============================================================
-// SIGNAL ARCS
-// ============================================================
-(function(){
-  const canvas=document.getElementById('arc-canvas'); const ctx=canvas.getContext('2d');
-  const CITIES=[[-74,40.7],[-87.6,41.8],[-118.2,34],[-122.4,37.8],[-77,38.9],[-0.1,51.5],[2.3,48.9],[13.4,52.5],[37.6,55.8],[139.7,35.7],[114.2,22.3],[103.8,1.3],[28,41],[30.3,59.9],[18.1,59.3],[72.8,18.9],[77.2,28.6],[88.4,22.6],[126.9,37.5],[151.2,-33.9],[55.3,25.2],[31,30],[36.8,-1.3],[3.4,6.5],[18.4,-33.9],[-43.2,-22.9],[-58.4,-34.6],[-99.1,19.4],[-70.7,-33.4],[28.1,-25.7]];
-  const COLORS=['#00d4ff','#00ff41','#f5c842','#ff2d2d','#9b59ff'];
-  let arcs=[];
-  function resize(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
-  resize(); window.addEventListener('resize',resize);
-  function project(lng,lat){ const W=canvas.width,H=canvas.height; const x=(lng+180)/360*W; const latRad=lat*Math.PI/180; const mercN=Math.log(Math.tan(Math.PI/4+latRad/2)); const y=H/2-mercN*W/(2*Math.PI); return{x,y}; }
-  function spawnArc(){ let a=Math.floor(Math.random()*CITIES.length),b=Math.floor(Math.random()*CITIES.length); while(b===a)b=Math.floor(Math.random()*CITIES.length); arcs.push({from:CITIES[a],to:CITIES[b],col:COLORS[Math.floor(Math.random()*COLORS.length)],progress:0,speed:0.007+Math.random()*0.01}); }
-  function draw(){
-    const W=canvas.width,H=canvas.height; ctx.clearRect(0,0,W,H);
-    arcs=arcs.filter(arc=>{ const f=project(arc.from[0],arc.from[1]); const t=project(arc.to[0],arc.to[1]); const mx=(f.x+t.x)/2,my=(f.y+t.y)/2-Math.hypot(t.x-f.x,t.y-f.y)*0.35; arc.progress=Math.min(1,arc.progress+arc.speed); const p=arc.progress; const bx=(1-p)*(1-p)*f.x+2*(1-p)*p*mx+p*p*t.x; const by=(1-p)*(1-p)*f.y+2*(1-p)*p*my+p*p*t.y; ctx.beginPath(); ctx.moveTo(f.x,f.y); const steps=30; for(let s=0;s<=steps;s++){ const sp=p*(s/steps); const tx2=(1-sp)*(1-sp)*f.x+2*(1-sp)*sp*mx+sp*sp*t.x; const ty2=(1-sp)*(1-sp)*f.y+2*(1-sp)*sp*my+sp*sp*t.y; ctx.lineTo(tx2,ty2); } ctx.strokeStyle=arc.col+'22'; ctx.lineWidth=1; ctx.stroke(); ctx.beginPath(); ctx.arc(bx,by,2,0,Math.PI*2); ctx.fillStyle=arc.col; ctx.fill(); const g=ctx.createRadialGradient(bx,by,0,bx,by,8); g.addColorStop(0,arc.col+'55'); g.addColorStop(1,arc.col+'00'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(bx,by,8,0,Math.PI*2); ctx.fill(); return arc.progress<1; });
-  }
-  setInterval(spawnArc,2000); setInterval(draw,30);
-})();
-
-// ============================================================
-// COUNTDOWN TIMER
+// COUNTDOWN
 // ============================================================
 function updateCountdown(){
-  const now = new Date();
-  const diff = LAUNCH_DATE - now;
+  const diff = LAUNCH_DATE - new Date();
 
   if(diff <= 0){
-    // ============================================================
-    // LAUNCHED! — change this message when the game goes live
-    // ============================================================
-    document.getElementById('cd-days').textContent  = '00';
-    document.getElementById('cd-hours').textContent = '00';
-    document.getElementById('cd-mins').textContent  = '00';
-    document.getElementById('cd-secs').textContent  = '00';
-    document.querySelector('.classified-text').textContent = 'ACCESS GRANTED — GENESIS IS LIVE';
-    document.querySelector('.classified-dot').style.background = 'var(--green)';
-    document.querySelector('.countdown-label').textContent = 'GENESIS IS NOW LIVE';
+    ['cd-days','cd-hours','cd-mins','cd-secs'].forEach(id=>document.getElementById(id).textContent='00');
+    document.querySelector('.launch-bar').textContent = 'GENESIS IS NOW LIVE — ENTER';
+    document.querySelector('.tagline').textContent    = 'the mission has begun';
     return;
   }
 
-  const days  = Math.floor(diff / (1000*60*60*24));
-  const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
-  const mins  = Math.floor((diff % (1000*60*60)) / (1000*60));
-  const secs  = Math.floor((diff % (1000*60)) / 1000);
+  const days  = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const mins  = Math.floor((diff % 3600000)  / 60000);
+  const secs  = Math.floor((diff % 60000)    / 1000);
 
-  const setNum = (id, val) => {
-    const el = document.getElementById(id);
+  function setNum(id, val){
+    const el  = document.getElementById(id);
     const str = String(val).padStart(2,'0');
     if(el.textContent !== str){
       el.textContent = str;
@@ -670,22 +469,12 @@ function updateCountdown(){
       void el.offsetWidth;
       el.classList.add('tick');
     }
-  };
+  }
 
   setNum('cd-days',  days);
   setNum('cd-hours', hours);
   setNum('cd-mins',  mins);
   setNum('cd-secs',  secs);
-
-  // Launch progress bar — % of total countdown elapsed
-  // ============================================================
-  // TOTAL DURATION: 42 days (6 weeks) — change if you set a different launch date
-  // ============================================================
-  const totalDuration = 42 * 24 * 60 * 60 * 1000;
-  const elapsed = totalDuration - diff;
-  const pct = Math.min(Math.max((elapsed / totalDuration) * 100, 0), 100);
-  document.getElementById('launch-fill').style.width = pct + '%';
-  document.getElementById('launch-pct').textContent = pct.toFixed(1) + '%';
 }
 
 setInterval(updateCountdown, 1000);
@@ -694,44 +483,43 @@ updateCountdown();
 // ============================================================
 // YOUTUBE SUB COUNTER
 // ============================================================
+let syncCountdown = SYNC_INTERVAL;
+
+function formatBig(n){
+  n = parseInt(n);
+  if(n >= 1000000) return (n/1000000).toFixed(1)+'M';
+  if(n >= 1000)    return (n/1000).toFixed(1)+'K';
+  return n.toLocaleString();
+}
+
 async function fetchSubs(){
-  try {
+  try{
     const res  = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${CHANNEL_ID}&key=${API_KEY}`);
     const data = await res.json();
-    if(data.error){ console.warn('API error:', data.error.message); return; }
+    if(data.error){ console.warn('API:', data.error.message); return; }
 
-    const subs = parseInt(data.items[0].statistics.subscriberCount, 10);
-    updateSubs(subs);
-  } catch(e) {
+    const stats = data.items[0].statistics;
+    const subs  = parseInt(stats.subscriberCount, 10);
+
+    document.getElementById('sub-count').textContent   = subs.toLocaleString();
+    document.getElementById('view-count').textContent  = formatBig(parseInt(stats.viewCount));
+    document.getElementById('video-count').textContent = parseInt(stats.videoCount).toLocaleString();
+
+    const pct = Math.min((subs / SUB_GOAL) * 100, 100);
+    document.getElementById('sub-fill').style.width    = pct + '%';
+    document.getElementById('sub-pct').textContent     = pct.toFixed(1) + '%';
+    document.getElementById('goal-label').textContent  = SUB_GOAL;
+
+    syncCountdown = SYNC_INTERVAL;
+  }catch(e){
     console.warn('Fetch error:', e);
   }
 }
 
-function updateSubs(subs){
-  const el = document.getElementById('sub-count');
-  if(prevSubs !== null && subs !== prevSubs){
-    el.classList.remove('tick'); void el.offsetWidth; el.classList.add('tick');
-  }
-  prevSubs = subs;
-  el.textContent = subs.toLocaleString();
-
-  // Goal progress
-  const pct = Math.min((subs / SUB_GOAL) * 100, 100);
-  document.getElementById('sub-fill').style.width = pct + '%';
-  document.getElementById('sub-pct').textContent = pct.toFixed(1) + '%';
-
-  const needed = Math.max(SUB_GOAL - subs, 0);
-  document.getElementById('sub-needed').textContent = needed > 0 ? needed + ' to go' : '✓ GOAL REACHED!';
-  document.getElementById('goal-label').textContent = SUB_GOAL;
-
-  countdown = SYNC_INTERVAL;
-}
-
-// Sync countdown display
 setInterval(()=>{
-  countdown--;
-  if(countdown <= 0) countdown = SYNC_INTERVAL;
-  document.getElementById('next-sync').textContent = `SYNC IN ${String(countdown).padStart(2,'0')}s`;
+  syncCountdown--;
+  if(syncCountdown <= 0) syncCountdown = SYNC_INTERVAL;
+  document.getElementById('next-sync').textContent = `SYNC IN ${String(syncCountdown).padStart(2,'0')}s`;
 }, 1000);
 
 fetchSubs();
