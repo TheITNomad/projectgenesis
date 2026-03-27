@@ -33,8 +33,10 @@
 
   #star-canvas { position:fixed; inset:0; z-index:0; }
 
+  #matrix-canvas { position:fixed; inset:0; z-index:1; opacity:0.10; pointer-events:none; }
+
   .maroon-glow {
-    position:fixed; inset:0; z-index:1;
+    position:fixed; inset:0; z-index:2;
     background:
       radial-gradient(ellipse 70% 60% at 50% 45%, rgba(120,0,18,0.55) 0%, rgba(80,0,10,0.35) 35%, rgba(30,0,4,0.2) 65%, transparent 100%),
       radial-gradient(ellipse 40% 30% at 50% 45%, rgba(180,0,24,0.3) 0%, transparent 70%);
@@ -42,19 +44,19 @@
   }
 
   .scanlines {
-    position:fixed; inset:0; z-index:2;
+    position:fixed; inset:0; z-index:3;
     background:repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, rgba(0,0,0,0.06) 3px, rgba(0,0,0,0.06) 4px);
     pointer-events:none;
   }
 
-  .corner { position:fixed; width:32px; height:32px; z-index:20; }
+  .corner { position:fixed; width:32px; height:32px; z-index:21; }
   .corner.tl { top:20px; left:20px;   border-top:1px solid rgba(180,0,24,0.6); border-left:1px solid rgba(180,0,24,0.6); }
   .corner.tr { top:20px; right:20px;  border-top:1px solid rgba(180,0,24,0.6); border-right:1px solid rgba(180,0,24,0.6); }
   .corner.bl { bottom:20px; left:20px;  border-bottom:1px solid rgba(180,0,24,0.6); border-left:1px solid rgba(180,0,24,0.6); }
   .corner.br { bottom:20px; right:20px; border-bottom:1px solid rgba(180,0,24,0.6); border-right:1px solid rgba(180,0,24,0.6); }
 
   .live-badge {
-    position:fixed; top:24px; right:28px; z-index:30;
+    position:fixed; top:24px; right:28px; z-index:31;
     display:flex; align-items:center; gap:7px;
     font-size:9px; letter-spacing:4px; color:var(--green); text-transform:uppercase;
     animation:fadeDown 1.2s ease both;
@@ -62,7 +64,7 @@
   .live-dot { width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 10px var(--green); animation:blink 1.2s ease infinite; }
 
   .stage {
-    position:relative; z-index:10;
+    position:relative; z-index:11;
     width:100vw; height:100vh;
     display:flex; flex-direction:column;
     align-items:center; justify-content:center;
@@ -106,7 +108,7 @@
     letter-spacing:clamp(3px,1.5vw,7px);
     color:var(--green);
     text-transform:lowercase;
-    margin-bottom:36px;
+    margin-bottom:4px;
     animation:fadeDown 1s ease 0.35s both;
     opacity:0.85;
   }
@@ -232,14 +234,14 @@
   .bottom-info {
     position:fixed; bottom:42px; left:50%; transform:translateX(-50%);
     font-size:clamp(7px,1.4vw,9px); letter-spacing:4px;
-    color:rgba(255,255,255,0.18); text-transform:uppercase; z-index:20; white-space:nowrap;
+    color:rgba(255,255,255,0.18); text-transform:uppercase; z-index:21; white-space:nowrap;
   }
   .bottom-info span { color:rgba(255,45,45,0.55); }
-  .next-sync { position:fixed; bottom:42px; right:22px; font-size:8px; letter-spacing:2px; color:rgba(255,255,255,0.18); z-index:20; }
+  .next-sync { position:fixed; bottom:42px; right:22px; font-size:8px; letter-spacing:2px; color:rgba(255,255,255,0.18); z-index:21; }
 
   /* Ticker */
   .ticker-bar {
-    position:fixed; bottom:0; left:0; right:0; z-index:20;
+    position:fixed; bottom:0; left:0; right:0; z-index:21;
     height:32px; background:rgba(0,0,0,0.92);
     border-top:1px solid rgba(180,0,24,0.18);
     display:flex; align-items:center; overflow:hidden;
@@ -271,11 +273,62 @@
     40% { color:#ff8080; text-shadow:0 0 40px rgba(255,45,45,1),0 0 80px rgba(180,0,24,0.8); }
     100%{ color:#ffffff; text-shadow:0 0 20px rgba(180,0,24,0.8),0 0 50px rgba(140,0,18,0.5); }
   }
+  /* Subscribe Button — inline centered */
+  .subscribe-wrap {
+    display:flex; justify-content:center;
+    margin-top:20px; margin-bottom:28px;
+    animation:fadeDown 1s ease 0.45s both;
+  }
+  .subscribe-btn {
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:'Orbitron', sans-serif;
+    font-size:clamp(9px,1.6vw,12px);
+    font-weight:700;
+    letter-spacing:clamp(3px,1.2vw,5px);
+    text-transform:uppercase;
+    color:#ffffff;
+    background:linear-gradient(135deg, var(--crimson), var(--maroon));
+    border:1px solid rgba(255,45,45,0.55);
+    padding:12px 28px 12px 20px;
+    cursor:pointer;
+    text-decoration:none;
+    position:relative;
+    overflow:hidden;
+    box-shadow:0 0 22px rgba(180,0,24,0.65), 0 0 50px rgba(180,0,24,0.2), inset 0 1px 0 rgba(255,255,255,0.08);
+    transition:box-shadow 0.3s ease, transform 0.2s ease;
+  }
+  .subscribe-btn:hover {
+    box-shadow:0 0 35px rgba(255,45,45,1), 0 0 80px rgba(180,0,24,0.55), inset 0 1px 0 rgba(255,255,255,0.14);
+    transform:translateY(-2px);
+  }
+  .subscribe-btn:active { transform:translateY(0); }
+  .subscribe-btn::before {
+    content:''; position:absolute; top:0; left:-100%; width:60%; height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.18),transparent);
+    animation:shimmer-bar 2.5s linear infinite;
+  }
+  .subscribe-icon {
+    width:16px; height:12px; flex-shrink:0;
+    position:relative; display:flex; align-items:center; justify-content:center;
+  }
+  .subscribe-icon svg { width:100%; height:100%; }
+  .sub-pulse {
+    position:absolute; inset:-5px;
+    border:1px solid rgba(255,45,45,0.55);
+    animation:sub-ring 2s ease infinite;
+    pointer-events:none;
+  }
+  @keyframes sub-ring {
+    0%   { transform:scale(1); opacity:0.8; }
+    70%  { transform:scale(1.9); opacity:0; }
+    100% { transform:scale(1.9); opacity:0; }
+  }
 </style>
 </head>
 <body>
 
 <canvas id="star-canvas"></canvas>
+<canvas id="matrix-canvas"></canvas>
 <div class="maroon-glow"></div>
 <div class="scanlines"></div>
 
@@ -285,6 +338,7 @@
 <div class="corner br"></div>
 
 <div class="live-badge"><div class="live-dot"></div>SIGNAL ACTIVE</div>
+
 <div class="bottom-info">@<span>TheITNomad</span> // rootaccess.gg</div>
 <div class="next-sync" id="next-sync">SYNC IN 60s</div>
 
@@ -300,6 +354,19 @@
        CHANGE TAGLINE HERE
        ============================================================ -->
   <div class="tagline">this is only the beginning</div>
+
+  <div class="subscribe-wrap">
+    <a class="subscribe-btn" href="https://www.youtube.com/@TheITNomad?sub_confirmation=1" target="_blank" rel="noopener">
+      <span class="subscribe-icon">
+        <svg viewBox="0 0 24 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="24" height="17" rx="4" fill="#ff2d2d"/>
+          <polygon points="9.5,4.5 18,8.5 9.5,12.5" fill="#ffffff"/>
+        </svg>
+        <span class="sub-pulse"></span>
+      </span>
+      SUBSCRIBE
+    </a>
+  </div>
 
   <div class="countdown-wrap">
     <div class="countdown-eyebrow">MISSION GOES LIVE IN</div>
@@ -317,7 +384,7 @@
     <!-- ============================================================
          CHANGE LAUNCH MESSAGE HERE
          ============================================================ -->
-    <div class="launch-bar">ACCESS RESTRICTED <br> LAUNCH IMMINENT</div>
+    <div class="launch-bar">ACCESS RESTRICTED <br>  LAUNCH IMMINENT</div>
   </div>
 
   <div class="sub-row">
@@ -378,6 +445,89 @@ const SUB_GOAL = 50;
 
 // How often to sync YouTube (seconds)
 const SYNC_INTERVAL = 600;
+
+// ============================================================
+// MATRIX RAIN
+// ============================================================
+(function(){
+  const canvas = document.getElementById('matrix-canvas');
+  const ctx    = canvas.getContext('2d');
+  const CHARS  = 'アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン0123456789ABCDEF';
+  const FONT_SIZE = 8;
+  const TRAIL_LEN = 20; // characters in each stream tail
+
+  let cols, streams;
+
+  function resize(){
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    init();
+  }
+
+  function init(){
+    cols = Math.floor(canvas.width / FONT_SIZE);
+    streams = [];
+    // All streams start at the top, staggered very slightly so they feel organic
+    // but essentially fall together like the movie opening
+    for(let i = 0; i < cols; i++){
+      streams.push({
+        x:    i * FONT_SIZE,
+        y:    -Math.floor(Math.random() * 8), // tiny stagger: 0–7 rows behind
+        chars: Array.from({length: TRAIL_LEN}, () => randChar()),
+        speed: 0.4 + Math.random() * 0.25,    // very similar speed across all columns
+      });
+    }
+  }
+
+  function randChar(){ return CHARS[Math.floor(Math.random() * CHARS.length)]; }
+
+  function draw(){
+    // Fade trail
+    ctx.fillStyle = 'rgba(0,0,0,0.18)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.font = `${FONT_SIZE}px 'Share Tech Mono', monospace`;
+
+    streams.forEach(s => {
+      // Randomly mutate one char in the tail
+      const mutIdx = Math.floor(Math.random() * TRAIL_LEN);
+      s.chars[mutIdx] = randChar();
+
+      for(let t = 0; t < TRAIL_LEN; t++){
+        const drawY = Math.floor(s.y - t) * FONT_SIZE;
+        if(drawY < 0 || drawY > canvas.height) continue;
+
+        if(t === 0){
+          // Bright white head
+          ctx.fillStyle = '#ffffff';
+          ctx.shadowColor = '#00ff41';
+          ctx.shadowBlur  = 6;
+        } else {
+          // Fade from bright green to dim green over trail length
+          const fade = 1 - t / TRAIL_LEN;
+          const g = Math.floor(180 * fade + 40);
+          ctx.fillStyle = `rgba(0,${g},30,${(fade * 0.9).toFixed(2)})`;
+          ctx.shadowBlur = 0;
+        }
+
+        ctx.fillText(s.chars[t % TRAIL_LEN], s.x, drawY);
+      }
+
+      ctx.shadowBlur = 0;
+      s.y += s.speed;
+
+      // Once the whole stream has passed the bottom, reset to top
+      if((s.y - TRAIL_LEN) * FONT_SIZE > canvas.height){
+        s.y = -Math.floor(Math.random() * 6);
+        s.speed = 0.4 + Math.random() * 0.25;
+      }
+    });
+  }
+
+  resize();
+  window.addEventListener('resize', resize);
+  setInterval(draw, 40);
+})();
 
 // ============================================================
 // STARFIELD
