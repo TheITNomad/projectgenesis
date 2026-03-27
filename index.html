@@ -3,10 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GENESIS — SUBSCRIBER FEED</title>
+<title>ROOT ACCESS — GENESIS</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
 
+  /* ============================================================
+     ROOT ACCESS COLOR BIBLE
+     ============================================================ */
   :root {
     --void:      #050a0f;
     --deep-navy: #080d14;
@@ -32,15 +35,17 @@
     user-select: none;
   }
 
-  /* ── MATRIX BG ───────────────────────────────────────────── */
+  /* ============================================================
+     BACKGROUNDS
+     ============================================================ */
   #matrix-bg { position: fixed; inset: 0; opacity: 0.06; z-index: 0; }
 
   .bg-glow {
     position: fixed; inset: 0; z-index: 1;
     background:
-      radial-gradient(ellipse 60% 50% at 50% 40%, rgba(0,212,255,0.07) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 60% at 20% 80%, rgba(0,255,65,0.04) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 40% at 80% 20%, rgba(245,200,66,0.03) 0%, transparent 60%);
+      radial-gradient(ellipse 70% 60% at 50% 30%, rgba(0,212,255,0.08) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 50% at 15% 80%, rgba(0,255,65,0.05) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 40% at 85% 20%, rgba(245,200,66,0.04) 0%, transparent 60%);
     pointer-events: none;
   }
 
@@ -50,488 +55,525 @@
     pointer-events: none;
   }
 
-  /* ── CORNER BRACKETS ─────────────────────────────────────── */
-  .corner { position: fixed; width: 28px; height: 28px; z-index: 20; opacity: 0.5; }
+  /* ============================================================
+     CORNER BRACKETS
+     ============================================================ */
+  .corner { position: fixed; width: 28px; height: 28px; z-index: 20; opacity: 0.4; }
   .corner.tl { top:16px; left:16px;  border-top:1px solid var(--cyan); border-left:1px solid var(--cyan); }
   .corner.tr { top:16px; right:16px; border-top:1px solid var(--cyan); border-right:1px solid var(--cyan); }
   .corner.bl { bottom:16px; left:16px;  border-bottom:1px solid var(--cyan); border-left:1px solid var(--cyan); }
   .corner.br { bottom:16px; right:16px; border-bottom:1px solid var(--cyan); border-right:1px solid var(--cyan); }
 
-  /* ── LIVE BADGE ──────────────────────────────────────────── */
+  /* ============================================================
+     LIVE BADGE
+     ============================================================ */
   .live-badge {
     position: fixed; top:22px; right:28px;
     display:flex; align-items:center; gap:7px;
     font-size:9px; letter-spacing:4px; color:var(--green);
     text-transform:uppercase; z-index:20;
+    animation: fadeDown 1s ease both;
   }
   .live-dot { width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 10px var(--green); animation:blink 1.2s ease infinite; }
 
-  /* ── MAP CANVAS ──────────────────────────────────────────── */
-  #world-map {
-    position: fixed; inset: 0; z-index: 3;
-    width: 100%; height: 100%;
-    opacity: 0.18;
-  }
+  /* ============================================================
+     ARC + MAP CANVAS
+     ============================================================ */
+  #world-map { position:fixed; inset:0; z-index:3; width:100%; height:100%; opacity:0.12; }
+  #arc-canvas { position:fixed; inset:0; z-index:4; width:100%; height:100%; pointer-events:none; }
 
-  /* ── ARC CANVAS ──────────────────────────────────────────── */
-  #arc-canvas {
-    position: fixed; inset: 0; z-index: 4;
-    width: 100%; height: 100%;
-    pointer-events: none;
-  }
-
-  /* ── MAIN LAYOUT ─────────────────────────────────────────── */
+  /* ============================================================
+     MAIN STAGE
+     ============================================================ */
   .stage {
     position: relative; z-index: 10;
     width: 100vw; height: 100vh;
-    display: grid;
-    grid-template-rows: auto 1fr auto;
-    grid-template-columns: 1fr;
-    padding: 60px 40px 100px;
-    gap: 0;
-  }
-
-  /* ── HEADER ──────────────────────────────────────────────── */
-  .header {
-    display: flex; flex-direction: column; align-items: center; gap: 5px;
-    animation: fadeDown 1s ease both;
-  }
-  .header-tag { font-size:10px; letter-spacing:6px; color:var(--cyan); opacity:0.6; text-transform:uppercase; }
-  .header-title { font-family:'Orbitron',sans-serif; font-size:clamp(16px,2.5vw,24px); font-weight:900; letter-spacing:8px; color:var(--ice); text-transform:uppercase; }
-  .header-title span { color:var(--cyan); }
-  .header-line { width:300px; height:1px; background:linear-gradient(90deg,transparent,var(--cyan),transparent); margin-top:4px; }
-
-  /* ── CENTER CORE ─────────────────────────────────────────── */
-  .core {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 0;
+    padding: 60px 20px 80px;
+    overflow-y: auto;
   }
 
-  .count-label { font-size:9px; letter-spacing:5px; color:var(--grey); text-transform:uppercase; }
+  /* ============================================================
+     HEADER
+     ============================================================ */
+  .header {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    margin-bottom: 28px;
+    animation: fadeDown 1s ease both;
+  }
 
-  .count-number {
+  .header-eyebrow {
+    font-size: clamp(8px,2vw,10px);
+    letter-spacing: clamp(4px,2vw,8px);
+    color: var(--cyan);
+    opacity: 0.6;
+    text-transform: uppercase;
+  }
+
+  .header-rootaccess {
     font-family: 'Orbitron', sans-serif;
-    font-size: clamp(80px, 16vw, 160px);
+    font-size: clamp(16px,4vw,36px);
+    font-weight: 900;
+    letter-spacing: clamp(6px,2vw,14px);
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .header-rootaccess .root { color: #ffffff; text-shadow: 0 0 20px rgba(255,255,255,0.3); }
+  .header-rootaccess .access { color: #ff2d2d; text-shadow: 0 0 20px rgba(255,45,45,0.5); }
+
+  .header-genesis {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(60px,18vw,160px);
+    font-weight: 900;
+    letter-spacing: 4px;
+    color: #00d4ff;
+    text-transform: uppercase;
+    text-shadow: 0 0 40px rgba(0,212,255,0.7), 0 0 80px rgba(0,212,255,0.4), 0 0 160px rgba(0,212,255,0.2);
+    line-height: 0.95;
+    margin-top: 2px;
+  }
+
+  /* ROOT ACCESS — white and red classic */
+  .header-rootaccess {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(14px,3.5vw,32px);
+    font-weight: 900;
+    letter-spacing: clamp(6px,2vw,16px);
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .header-rootaccess .root   { color: #ffffff; text-shadow: 0 0 20px rgba(255,255,255,0.35); }
+  .header-rootaccess .access { color: #ff2d2d; text-shadow: 0 0 20px rgba(255,45,45,0.55); }
+
+  /* GENESIS — massive single color */
+  .header-genesis {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(58px,17vw,156px);
+    font-weight: 900;
+    letter-spacing: 2px;
+    color: #00d4ff;
+    text-transform: uppercase;
+    text-shadow:
+      0 0 40px rgba(0,212,255,0.75),
+      0 0 80px rgba(0,212,255,0.45),
+      0 0 160px rgba(0,212,255,0.2);
+    line-height: 0.92;
+    margin-top: 4px;
+  }
+
+  .header-sub {
+    font-size: clamp(9px,2.2vw,11px);
+    letter-spacing: clamp(3px,1.5vw,6px);
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .header-line {
+    width: min(400px, 85vw); height: 1px;
+    background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+    margin-top: 8px;
+  }
+
+  /* ============================================================
+     CLASSIFIED BADGE
+     ============================================================ */
+  .classified {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(255,45,45,0.06);
+    border: 1px solid rgba(255,45,45,0.25);
+    border-radius: 2px;
+    padding: 6px 18px;
+    margin-bottom: 24px;
+    animation: fadeDown 1s ease 0.2s both;
+  }
+  .classified-dot { width:6px; height:6px; border-radius:50%; background:var(--red); box-shadow:0 0 8px var(--red); animation:blink 0.8s ease infinite; }
+  .classified-text { font-size:9px; letter-spacing:4px; color:var(--red); text-transform:uppercase; }
+
+  /* ============================================================
+     COUNTDOWN SECTION
+     ============================================================ */
+  .countdown-section {
+    display: flex; flex-direction: column; align-items: center; gap: 12px;
+    margin-bottom: 28px;
+    animation: fadeUp 1s ease 0.3s both;
+  }
+
+  .countdown-label {
+    font-size: clamp(8px,2vw,9px);
+    letter-spacing: clamp(3px,1.5vw,6px);
+    color: var(--grey);
+    text-transform: uppercase;
+  }
+
+  .countdown-blocks {
+    display: flex;
+    gap: clamp(10px,3vw,24px);
+    align-items: center;
+  }
+
+  .countdown-block {
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+  }
+
+  .countdown-num {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(36px,10vw,88px);
     font-weight: 900;
     line-height: 1;
     color: var(--cyan);
-    text-shadow: 0 0 40px rgba(0,212,255,0.5), 0 0 80px rgba(0,212,255,0.25);
-    letter-spacing: -4px;
-    position: relative;
-  }
-  .count-number.tick { animation: pulse-tick 0.5s ease; }
-
-  /* ── STATS ROW ───────────────────────────────────────────── */
-  .stats-row {
-    display: flex; gap: 40px; justify-content: center; margin-top: 10px;
-    animation: fadeUp 1s ease 0.3s both;
-  }
-  .stat-box { display:flex; flex-direction:column; align-items:center; gap:3px; }
-  .stat-val { font-family:'Orbitron',sans-serif; font-size:clamp(13px,2vw,18px); font-weight:700; color:var(--gold); }
-  .stat-lbl { font-size:8px; letter-spacing:3px; color:var(--grey); text-transform:uppercase; }
-
-  /* ── SESSION GAIN ────────────────────────────────────────── */
-  .session-gain {
-    font-size:11px; letter-spacing:3px; color:var(--green);
-    margin-top:4px;
-  }
-  .session-gain span { font-family:'Orbitron',sans-serif; font-weight:700; }
-
-  /* ── LATEST VIDEO ────────────────────────────────────────── */
-  .latest-video {
-    display:flex; align-items:center; gap:10px;
-    background: rgba(255,45,45,0.06);
-    border: 1px solid rgba(255,45,45,0.2);
-    border-radius: 3px;
-    padding: 8px 18px;
-    margin-top: 10px;
-    max-width: min(600px, 90vw);
-    animation: fadeUp 1s ease 0.5s both;
-  }
-  .latest-dot { width:7px; height:7px; border-radius:50%; background:var(--red); box-shadow:0 0 8px var(--red); animation:blink 1s ease infinite; flex-shrink:0; }
-  .latest-label { font-size:8px; letter-spacing:3px; color:var(--red); text-transform:uppercase; flex-shrink:0; }
-  .latest-title { font-size:10px; letter-spacing:1px; color:var(--ice); opacity:0.8; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-
-  /* ── GOAL CHAIN ──────────────────────────────────────────── */
-  .goal-section {
-    width: min(560px, 88vw);
-    margin: 0 auto;
-    display: flex; flex-direction: column; gap: 10px;
-    animation: fadeUp 1s ease 0.4s both;
+    text-shadow: 0 0 30px rgba(0,212,255,0.5), 0 0 60px rgba(0,212,255,0.25);
+    min-width: clamp(60px,12vw,120px);
+    text-align: center;
+    transition: all 0.3s ease;
   }
 
-  .goal-chain {
-    display: flex; gap: 6px; justify-content: center; flex-wrap: wrap;
-  }
-  .goal-pip {
-    font-size:8px; letter-spacing:2px; color:var(--grey);
-    padding:3px 8px;
-    border: 1px solid var(--circuit);
-    border-radius: 2px;
-    transition: all 0.4s ease;
-  }
-  .goal-pip.active { color:var(--cyan); border-color:var(--cyan); box-shadow:0 0 8px rgba(0,212,255,0.3); }
-  .goal-pip.done   { color:var(--green); border-color:var(--green); box-shadow:0 0 8px rgba(0,255,65,0.3); }
+  .countdown-num.tick { animation: num-tick 0.3s ease; }
 
-  .goal-header { display:flex; justify-content:space-between; font-size:9px; letter-spacing:3px; color:var(--grey); text-transform:uppercase; }
-  .goal-pct { font-family:'Orbitron',sans-serif; font-size:11px; font-weight:700; color:var(--gold); }
+  .countdown-unit {
+    font-size: clamp(7px,1.8vw,9px);
+    letter-spacing: clamp(2px,1vw,4px);
+    color: var(--grey);
+    text-transform: uppercase;
+  }
 
-  .progress-track { width:100%; height:5px; background:var(--circuit); border-radius:3px; overflow:hidden; }
-  .progress-fill {
+  .countdown-sep {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(24px,6vw,56px);
+    font-weight: 900;
+    color: var(--circuit);
+    margin-bottom: 20px;
+    animation: blink 1s ease infinite;
+  }
+
+  /* Progress bar under countdown */
+  .launch-progress {
+    width: min(500px, 88vw);
+    display: flex; flex-direction: column; gap: 6px;
+  }
+
+  .launch-progress-header {
+    display: flex; justify-content: space-between;
+    font-size: clamp(7px,2vw,9px); letter-spacing: 2px; color: var(--grey);
+    text-transform: uppercase;
+  }
+
+  .launch-pct { font-family:'Orbitron',sans-serif; font-size:10px; font-weight:700; color:var(--gold); }
+
+  .launch-track { width:100%; height:3px; background:var(--circuit); border-radius:2px; overflow:hidden; }
+  .launch-fill {
     height:100%; width:0%;
-    background: linear-gradient(90deg, var(--green), var(--cyan));
-    border-radius:3px;
-    transition: width 1.2s cubic-bezier(0.25,1,0.5,1);
-    box-shadow: 0 0 12px rgba(0,212,255,0.5);
+    background: linear-gradient(90deg, var(--gold), var(--cyan));
+    border-radius:2px;
+    transition: width 1s ease;
+    box-shadow: 0 0 10px rgba(0,212,255,0.4);
     position:relative;
   }
-  .progress-fill::after {
+  .launch-fill::after {
+    content:''; position:absolute; top:0; left:-60px; width:60px; height:100%;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,0.5),transparent);
+    animation:shimmer 2s linear infinite;
+  }
+
+  /* ============================================================
+     DIVIDER
+     ============================================================ */
+  .section-divider {
+    width: min(500px,88vw); height: 1px;
+    background: linear-gradient(90deg, transparent, var(--circuit), transparent);
+    margin: 16px 0;
+  }
+
+  /* ============================================================
+     SUB COUNTER SECTION
+     ============================================================ */
+  .sub-section {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    animation: fadeUp 1s ease 0.5s both;
+  }
+
+  .sub-label { font-size:clamp(7px,2vw,9px); letter-spacing:clamp(2px,1.5vw,5px); color:var(--grey); text-transform:uppercase; }
+
+  .sub-count {
+    font-family: 'Orbitron', sans-serif;
+    font-size: clamp(32px,9vw,72px);
+    font-weight: 900;
+    line-height: 1;
+    color: var(--green);
+    text-shadow: 0 0 30px rgba(0,255,65,0.4), 0 0 60px rgba(0,255,65,0.2);
+    letter-spacing: -2px;
+  }
+  .sub-count.tick { animation: sub-tick 0.4s ease; }
+
+  /* Goal bar */
+  .sub-goal {
+    width: min(500px,88vw);
+    display: flex; flex-direction: column; gap: 6px;
+    margin-top: 4px;
+  }
+
+  .sub-goal-header { display:flex; justify-content:space-between; font-size:clamp(7px,2vw,9px); letter-spacing:2px; color:var(--grey); text-transform:uppercase; }
+  .sub-goal-pct { font-family:'Orbitron',sans-serif; font-size:10px; font-weight:700; color:var(--gold); }
+
+  .sub-track { width:100%; height:4px; background:var(--circuit); border-radius:2px; overflow:hidden; }
+  .sub-fill {
+    height:100%; width:0%;
+    background: linear-gradient(90deg, var(--green), var(--cyan));
+    border-radius:2px;
+    transition: width 1.2s cubic-bezier(0.25,1,0.5,1);
+    box-shadow: 0 0 10px rgba(0,255,65,0.4);
+    position:relative;
+  }
+  .sub-fill::after {
     content:''; position:absolute; top:0; left:-60px; width:60px; height:100%;
     background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);
     animation:shimmer 2.5s linear infinite;
   }
 
-  .goal-footer { display:flex; justify-content:space-between; font-size:8px; letter-spacing:2px; color:var(--grey); }
-  .needed { color:var(--gold); }
+  .sub-needed { font-size:clamp(7px,2vw,8px); letter-spacing:1px; color:var(--grey); text-align:right; }
+  .sub-needed span { color:var(--gold); }
 
-  /* ── STATUS ROW ──────────────────────────────────────────── */
-  .status-row {
-    display:flex; gap:28px; justify-content:center;
-    margin-top:8px;
-    animation: fadeUp 1s ease 0.6s both;
+  /* ============================================================
+     GHOST MESSAGE
+     ============================================================ */
+  .ghost-msg {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: rgba(0,212,255,0.04);
+    border: 1px solid rgba(0,212,255,0.12);
+    border-left: 2px solid var(--cyan);
+    border-radius: 2px;
+    padding: 10px 16px;
+    max-width: min(500px,88vw);
+    margin-top: 8px;
+    animation: fadeUp 1s ease 0.7s both;
   }
-  .status-item { display:flex; flex-direction:column; align-items:center; gap:3px; }
-  .s-dot { width:6px; height:6px; border-radius:50%; background:var(--green); box-shadow:0 0 8px var(--green); animation:blink 2s ease infinite; }
-  .s-dot.yellow { background:var(--gold); box-shadow:0 0 8px var(--gold); }
-  .s-dot.red    { background:var(--red);  box-shadow:0 0 8px var(--red); }
-  .s-lbl { font-size:8px; letter-spacing:3px; color:var(--grey); text-transform:uppercase; }
-  .s-val { font-family:'Orbitron',sans-serif; font-size:10px; font-weight:700; color:var(--ice); }
+  .ghost-tag { font-size:9px; letter-spacing:3px; color:var(--cyan); flex-shrink:0; text-transform:uppercase; }
+  .ghost-text { font-size:clamp(8px,2.2vw,10px); letter-spacing:1px; color:var(--grey); line-height:1.6; }
 
-  /* ── TICKER ──────────────────────────────────────────────── */
+  /* ============================================================
+     BOTTOM BAR / TICKER
+     ============================================================ */
   .ticker-bar {
     position: fixed; bottom:0; left:0; right:0; z-index:20;
-    height: 36px;
-    background: rgba(5,10,15,0.92);
-    border-top: 1px solid rgba(0,212,255,0.15);
+    height: 34px;
+    background: rgba(5,10,15,0.95);
+    border-top: 1px solid rgba(0,212,255,0.12);
     display: flex; align-items: center; overflow: hidden;
   }
   .ticker-label {
     flex-shrink:0; padding:0 14px;
     font-size:8px; letter-spacing:4px; color:var(--cyan);
-    border-right:1px solid rgba(0,212,255,0.2);
+    border-right:1px solid rgba(0,212,255,0.15);
     height:100%; display:flex; align-items:center;
-    background:rgba(0,212,255,0.04);
+    background:rgba(0,212,255,0.03);
+    text-transform:uppercase;
   }
-  .ticker-scroll { flex:1; overflow:hidden; position:relative; }
+  .ticker-scroll { flex:1; overflow:hidden; }
   .ticker-inner {
     display:flex; gap:60px; white-space:nowrap;
     font-size:9px; letter-spacing:2px; color:var(--grey);
-    animation: ticker-move 30s linear infinite;
+    animation: ticker-move 25s linear infinite;
   }
   .ticker-inner span { color:var(--cyan); }
 
-  /* ── NEW SUB FLASH ───────────────────────────────────────── */
-  #newsub-overlay {
-    position: fixed; inset:0; z-index:100;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    pointer-events:none; opacity:0;
-  }
-  #newsub-overlay.fire {
-    animation: newsub-flash 2.5s ease forwards;
-  }
-  .newsub-ring {
-    width:300px; height:300px; border-radius:50%;
-    border:2px solid var(--gold);
-    position:absolute;
-    animation:inherit;
-  }
-  .newsub-text {
-    font-family:'Orbitron',sans-serif;
-    font-size:clamp(28px,6vw,56px);
-    font-weight:900;
-    color:var(--gold);
-    letter-spacing:6px;
-    text-shadow:0 0 40px rgba(245,200,66,0.8), 0 0 80px rgba(245,200,66,0.4);
-    text-align:center;
-    line-height:1.2;
-  }
-  .newsub-sub {
-    font-size:11px; letter-spacing:6px; color:var(--cyan); margin-top:8px;
-  }
-
-  /* ── MILESTONE OVERLAY ───────────────────────────────────── */
-  #milestone-overlay {
-    position:fixed; inset:0; z-index:99;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    pointer-events:none; opacity:0;
-    background:rgba(5,10,15,0.7);
-  }
-  #milestone-overlay.fire { animation: milestone-anim 4s ease forwards; }
-  .milestone-text {
-    font-family:'Orbitron',sans-serif;
-    font-size:clamp(40px,10vw,96px);
-    font-weight:900; letter-spacing:4px;
-    text-align:center; line-height:1.1;
-  }
-  .milestone-sub { font-size:12px; letter-spacing:8px; color:var(--ice); margin-top:12px; opacity:0.7; }
-
-  /* ── CHANNEL + NEXT UPDATE ───────────────────────────────── */
+  /* ============================================================
+     CHANNEL TAG + NEXT SYNC
+     ============================================================ */
   .channel-tag {
-    position:fixed; bottom:44px; left:50%; transform:translateX(-50%);
-    font-size:9px; letter-spacing:5px; color:var(--grey); text-transform:uppercase; z-index:20;
+    position:fixed; bottom:42px; left:50%; transform:translateX(-50%);
+    font-size:clamp(7px,2vw,9px); letter-spacing:4px; color:var(--grey);
+    text-transform:uppercase; z-index:20; white-space:nowrap;
   }
   .channel-tag span { color:var(--cyan); }
-  .next-update { position:fixed; bottom:44px; right:28px; font-size:9px; letter-spacing:3px; color:var(--grey); z-index:20; }
+  .next-sync { position:fixed; bottom:42px; right:20px; font-size:8px; letter-spacing:2px; color:var(--grey); z-index:20; }
 
-  /* ── ANIMATIONS ──────────────────────────────────────────── */
+  /* ============================================================
+     ANIMATIONS
+     ============================================================ */
   @keyframes fadeDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
   @keyframes fadeUp   { from{opacity:0;transform:translateY(20px)}  to{opacity:1;transform:translateY(0)} }
-  @keyframes blink    { 0%,100%{opacity:1} 50%{opacity:0.25} }
+  @keyframes blink    { 0%,100%{opacity:1} 50%{opacity:0.2} }
   @keyframes shimmer  { from{left:-60px} to{left:110%} }
   @keyframes ticker-move { from{transform:translateX(0)} to{transform:translateX(-50%)} }
 
-  @keyframes pulse-tick {
-    0%  { text-shadow:0 0 40px rgba(0,212,255,0.5),0 0 80px rgba(0,212,255,0.25); }
-    40% { text-shadow:0 0 80px rgba(0,212,255,1),0 0 160px rgba(0,212,255,0.6),0 0 240px rgba(0,255,65,0.4); color:#ffffff; }
-    100%{ text-shadow:0 0 40px rgba(0,212,255,0.5),0 0 80px rgba(0,212,255,0.25); }
+  @keyframes num-tick {
+    0%  { color:var(--cyan); text-shadow:0 0 30px rgba(0,212,255,0.5); }
+    40% { color:#ffffff; text-shadow:0 0 60px rgba(0,212,255,1), 0 0 120px rgba(0,212,255,0.5); }
+    100%{ color:var(--cyan); text-shadow:0 0 30px rgba(0,212,255,0.5); }
   }
 
-  @keyframes newsub-flash {
-    0%   { opacity:0; transform:scale(0.8); }
-    10%  { opacity:1; transform:scale(1.05); }
-    20%  { transform:scale(1); }
-    75%  { opacity:1; }
-    100% { opacity:0; }
-  }
-
-  @keyframes milestone-anim {
-    0%   { opacity:0; transform:scale(0.7); }
-    8%   { opacity:1; transform:scale(1.08); }
-    15%  { transform:scale(1); }
-    80%  { opacity:1; }
-    100% { opacity:0; }
-  }
-
-  @keyframes ring-expand {
-    0%   { transform:scale(0.5); opacity:0.8; }
-    100% { transform:scale(3);   opacity:0; }
+  @keyframes sub-tick {
+    0%  { color:var(--green); }
+    40% { color:#ffffff; text-shadow:0 0 60px rgba(0,255,65,1); }
+    100%{ color:var(--green); }
   }
 </style>
 </head>
 <body>
 
+<!-- Background layers -->
 <canvas id="matrix-bg"></canvas>
 <div class="bg-glow"></div>
 <div class="scanlines"></div>
 <canvas id="world-map"></canvas>
 <canvas id="arc-canvas"></canvas>
 
+<!-- Corner brackets -->
 <div class="corner tl"></div>
 <div class="corner tr"></div>
 <div class="corner bl"></div>
 <div class="corner br"></div>
 
-<div class="live-badge"><div class="live-dot"></div>LIVE FEED</div>
-<div class="channel-tag">CHANNEL // <span>@TheITNomad</span></div>
-<div class="next-update" id="next-update">SYNC IN 60s</div>
+<!-- Live badge -->
+<div class="live-badge"><div class="live-dot"></div>SIGNAL ACTIVE</div>
 
-<!-- New sub flash -->
-<div id="newsub-overlay">
-  <div class="newsub-ring" id="ring1"></div>
-  <div class="newsub-ring" id="ring2"></div>
-  <div class="newsub-text">+1 SUBSCRIBER</div>
-  <div class="newsub-sub">SIGNAL ACQUIRED</div>
-</div>
+<!-- Channel -->
+<div class="channel-tag">@<span>TheITNomad</span> // ROOT ACCESS UNIVERSE</div>
+<div class="next-sync" id="next-sync">SYNC IN 60s</div>
 
-<!-- Milestone overlay -->
-<div id="milestone-overlay">
-  <div class="milestone-text" id="milestone-text"></div>
-  <div class="milestone-sub" id="milestone-sub"></div>
-</div>
-
+<!-- Main -->
 <div class="stage">
 
+  <!-- Header -->
   <div class="header">
-    <div class="header-tag">ROOT ACCESS // SIGNAL MONITOR</div>
-    <div class="header-title">SUBSCRIBER <span>FEED</span></div>
+    <div class="header-rootaccess"><span class="root">ROOT&nbsp;</span><span class="access">ACCESS</span></div>
+    <div class="header-genesis">GENESIS</div>
+    <div class="header-sub">The world is the target. GENESIS is the key.</div>
     <div class="header-line"></div>
   </div>
 
-  <div class="core">
-
-    <div class="count-label">TOTAL SUBSCRIBERS</div>
-    <div class="count-number" id="sub-count">––––</div>
-    <div class="session-gain" id="session-gain">SESSION +<span id="gained">0</span></div>
-
-    <div class="stats-row">
-      <div class="stat-box">
-        <div class="stat-val" id="view-count">––</div>
-        <div class="stat-lbl">Total Views</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-val" id="video-count">––</div>
-        <div class="stat-lbl">Videos</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-val" id="sub-count-sm">––</div>
-        <div class="stat-lbl">Subscribers</div>
-      </div>
-    </div>
-
-    <div class="latest-video">
-      <div class="latest-dot"></div>
-      <div class="latest-label">LATEST</div>
-      <div class="latest-title" id="latest-title">SCANNING...</div>
-    </div>
-
-    <div class="goal-section" style="margin-top:16px">
-      <div class="goal-chain" id="goal-chain"></div>
-      <div class="goal-header">
-        <span id="goal-label">OPERATION: 50 SUBS</span>
-        <span class="goal-pct" id="goal-pct">0%</span>
-      </div>
-      <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
-      <div class="goal-footer">
-        <span>CURRENT OBJECTIVE</span>
-        <span class="needed" id="needed-label">–– REMAINING</span>
-      </div>
-    </div>
-
-    <div class="status-row">
-      <div class="status-item">
-        <div class="s-dot" id="status-dot"></div>
-        <div class="s-lbl">STATUS</div>
-        <div class="s-val" id="status-val">CONNECTING</div>
-      </div>
-      <div class="status-item">
-        <div class="s-dot yellow"></div>
-        <div class="s-lbl">LAST SYNC</div>
-        <div class="s-val" id="last-sync">––:––</div>
-      </div>
-      <div class="status-item">
-        <div class="s-dot"></div>
-        <div class="s-lbl">INTERVAL</div>
-        <div class="s-val">60s</div>
-      </div>
-    </div>
-
+  <!-- Classified badge -->
+  <div class="classified">
+    <div class="classified-dot"></div>
+    <div class="classified-text">ACCESS RESTRICTED — LAUNCH IMMINENT</div>
   </div>
 
-  <!-- spacer -->
-  <div></div>
+  <!-- Countdown -->
+  <div class="countdown-section">
+    <div class="countdown-label">MISSION GOES LIVE IN</div>
+    <div class="countdown-blocks">
+      <div class="countdown-block">
+        <div class="countdown-num" id="cd-days">00</div>
+        <div class="countdown-unit">Days</div>
+      </div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-block">
+        <div class="countdown-num" id="cd-hours">00</div>
+        <div class="countdown-unit">Hours</div>
+      </div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-block">
+        <div class="countdown-num" id="cd-mins">00</div>
+        <div class="countdown-unit">Minutes</div>
+      </div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-block">
+        <div class="countdown-num" id="cd-secs">00</div>
+        <div class="countdown-unit">Seconds</div>
+      </div>
+    </div>
+
+    <!-- Launch progress bar -->
+    <div class="launch-progress">
+      <div class="launch-progress-header">
+        <span>LAUNCH SEQUENCE</span>
+        <span class="launch-pct" id="launch-pct">0%</span>
+      </div>
+      <div class="launch-track"><div class="launch-fill" id="launch-fill"></div></div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Sub counter -->
+  <div class="sub-section">
+    <div class="sub-label">SUBSCRIBERS ONLINE</div>
+    <div class="sub-count" id="sub-count">––––</div>
+
+    <div class="sub-goal">
+      <div class="sub-goal-header">
+        <!-- ============================================================
+             CHANGE GOAL HERE — update the number below
+             ============================================================ -->
+        <span>OPERATION: <span id="goal-label">50</span> SUBS</span>
+        <span class="sub-goal-pct" id="sub-pct">0%</span>
+      </div>
+      <div class="sub-track"><div class="sub-fill" id="sub-fill"></div></div>
+      <div class="sub-needed">NEEDED: <span id="sub-needed">––</span></div>
+    </div>
+  </div>
+
+  <!-- Ghost message -->
+  <div class="ghost-msg">
+    <div class="ghost-tag">Ghost //</div>
+    <!-- ============================================================
+         CHANGE GHOST MESSAGE HERE — update the text below
+         ============================================================ -->
+    <div class="ghost-text">Something big is coming. Stay off the grid. When the clock hits zero — GENESIS goes live. You'll want to be there.</div>
+  </div>
 
 </div>
 
 <!-- Ticker -->
 <div class="ticker-bar">
-  <div class="ticker-label">INTEL FEED</div>
+  <div class="ticker-label">INTEL</div>
   <div class="ticker-scroll">
-    <div class="ticker-inner" id="ticker-inner">
-      <span>@TheITNomad</span> // ROOT ACCESS UNIVERSE IS LIVE //
-      <span>GENESIS GAME</span> // STEPPING STONES CLASSROOM //
-      <span>SUBSCRIBE</span> // HELP US REACH THE GOAL //
-      <span>LIVE WIRE</span> // CLEAR PATH // MOBILE SERIES //
-      <span>@TheITNomad</span> // ROOT ACCESS UNIVERSE IS LIVE //
-      <span>GENESIS GAME</span> // STEPPING STONES CLASSROOM //
-      <span>SUBSCRIBE</span> // HELP US REACH THE GOAL //
-      <span>LIVE WIRE</span> // CLEAR PATH // MOBILE SERIES //
+    <!-- ============================================================
+         CHANGE TICKER TEXT HERE — duplicate items for seamless loop
+         ============================================================ -->
+    <div class="ticker-inner">
+      <span>GENESIS</span> // LAUNCHING SOON //
+      <span>ROOT ACCESS</span> // HACKER SIMULATION GAME //
+      <span>@TheITNomad</span> // SUBSCRIBE TO UNLOCK EARLY ACCESS //
+      <span>STEPPING STONES</span> // LEARN REAL HACKING TECHNIQUES //
+      <span>SEASON 1</span> // 164 CITIES // 9 RANKS // 50 TOOLS //
+      <span>GENESIS</span> // LAUNCHING SOON //
+      <span>ROOT ACCESS</span> // HACKER SIMULATION GAME //
+      <span>@TheITNomad</span> // SUBSCRIBE TO UNLOCK EARLY ACCESS //
+      <span>STEPPING STONES</span> // LEARN REAL HACKING TECHNIQUES //
+      <span>SEASON 1</span> // 164 CITIES // 9 RANKS // 50 TOOLS //
     </div>
   </div>
 </div>
 
 <script>
-// ── CONFIG ────────────────────────────────────────────────────
+// ============================================================
+// CONFIG — CHANGE THESE VALUES
+// ============================================================
+
+// LAUNCH DATE — set your target launch date here
+// Format: 'YYYY-MM-DDTHH:MM:SS' in your local time
+// Current setting: 6 weeks from now
+const LAUNCH_DATE = new Date(Date.now() + 42 * 24 * 60 * 60 * 1000);
+
+// YouTube API — paste your key and channel ID here
 const API_KEY    = 'AIzaSyC7o4QatTDalAcKFBc30CLEyrsPonSrE08';
 const CHANNEL_ID = 'UCngdjivpUyeBYwyFm_pxTfQ';
-const INTERVAL   = 600;
-const GOALS      = [50, 100, 500, 1000, 5000, 10000];
 
-const MILESTONE_MSGS = {
-  25:    { text:'25\nSUBSCRIBERS', color:'#00ff41',  sub:'GHOST SIGNAL ACQUIRED' },
-  50:    { text:'50\nSUBSCRIBERS', color:'#00d4ff',  sub:'OPERATION COMPLETE' },
-  100:   { text:'100\nSUBSCRIBERS',color:'#f5c842',  sub:'SCRIPT KID STATUS UNLOCKED' },
-  500:   { text:'500\nSUBSCRIBERS',color:'#9b59ff',  sub:'GREY HAT INCOMING' },
-  1000:  { text:'1K\nSUBSCRIBERS', color:'#ff6b00',  sub:'PEN TESTER TIER REACHED' },
-  5000:  { text:'5K\nSUBSCRIBERS', color:'#ff2d2d',  sub:'RED TEAM ACTIVATED' },
-  10000: { text:'10K\nSUBSCRIBERS',color:'#ffffff',  sub:'ROOT ACCESS ACHIEVED' },
-};
+// Sub goal — change this number to update the goal
+const SUB_GOAL = 50;
 
-// ── STATE ─────────────────────────────────────────────────────
+// How often to sync YouTube data (seconds)
+const SYNC_INTERVAL = 600;
+
+// ============================================================
+// STATE
+// ============================================================
+let countdown    = SYNC_INTERVAL;
 let prevSubs     = null;
-let sessionStart = null;
-let sessionGain  = 0;
-let countdown    = INTERVAL;
-let currentGoalIdx = 0;
-let firedMilestones = new Set();
 
-// ── AUDIO ─────────────────────────────────────────────────────
-const AC = new (window.AudioContext || window.webkitAudioContext)();
-
-function playNewSub(){
-  const t = AC.currentTime;
-  // Rising chime
-  [440,554,659,880].forEach((freq,i)=>{
-    const osc = AC.createOscillator();
-    const gain = AC.createGain();
-    osc.connect(gain); gain.connect(AC.destination);
-    osc.type = 'sine';
-    osc.frequency.setValueAtTime(freq, t + i*0.08);
-    gain.gain.setValueAtTime(0, t + i*0.08);
-    gain.gain.linearRampToValueAtTime(0.18, t + i*0.08 + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + i*0.08 + 0.4);
-    osc.start(t + i*0.08);
-    osc.stop(t + i*0.08 + 0.4);
-  });
-}
-
-function playMilestone(){
-  const t = AC.currentTime;
-  // Big cinematic hit
-  [220,277,330,440,554,659,880].forEach((freq,i)=>{
-    const osc = AC.createOscillator();
-    const gain = AC.createGain();
-    osc.connect(gain); gain.connect(AC.destination);
-    osc.type = i < 3 ? 'sawtooth' : 'sine';
-    osc.frequency.setValueAtTime(freq, t);
-    osc.frequency.exponentialRampToValueAtTime(freq*1.02, t+0.1);
-    gain.gain.setValueAtTime(0.22, t);
-    gain.gain.exponentialRampToValueAtTime(0.001, t + 2.5);
-    osc.start(t); osc.stop(t + 2.5);
-  });
-  // Sub bass thud
-  const bass = AC.createOscillator();
-  const bassGain = AC.createGain();
-  bass.connect(bassGain); bassGain.connect(AC.destination);
-  bass.type = 'sine';
-  bass.frequency.setValueAtTime(80, t);
-  bass.frequency.exponentialRampToValueAtTime(30, t+0.3);
-  bassGain.gain.setValueAtTime(0.4, t);
-  bassGain.gain.exponentialRampToValueAtTime(0.001, t+0.4);
-  bass.start(t); bass.stop(t+0.4);
-}
-
-function playSync(){
-  const t = AC.currentTime;
-  const osc = AC.createOscillator();
-  const gain = AC.createGain();
-  osc.connect(gain); gain.connect(AC.destination);
-  osc.type = 'sine';
-  osc.frequency.setValueAtTime(880, t);
-  osc.frequency.exponentialRampToValueAtTime(440, t+0.15);
-  gain.gain.setValueAtTime(0.06, t);
-  gain.gain.exponentialRampToValueAtTime(0.001, t+0.2);
-  osc.start(t); osc.stop(t+0.2);
-}
-
-// ── MATRIX RAIN ───────────────────────────────────────────────
+// ============================================================
+// MATRIX RAIN
+// ============================================================
 (function(){
   const canvas = document.getElementById('matrix-bg');
   const ctx = canvas.getContext('2d');
   let cols, drops;
-  const chars = '01アイウエオカキクケコ#$%&ハヒフヘホ';
+  const chars = '01アイウエオカキクケコ#$%&ハヒフヘホGENESIS';
   function resize(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; cols=Math.floor(canvas.width/16); drops=Array(cols).fill(1); }
   function draw(){
     ctx.fillStyle='rgba(5,10,15,0.05)'; ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -541,310 +583,159 @@ function playSync(){
   resize(); window.addEventListener('resize',resize); setInterval(draw,55);
 })();
 
-// ── WORLD MAP (dot grid) ──────────────────────────────────────
+// ============================================================
+// WORLD MAP DOTS
+// ============================================================
 (function(){
   const canvas = document.getElementById('world-map');
   const ctx = canvas.getContext('2d');
-  // Simplified world outline as lat/lng city dots
   const CITIES = [
-    // North America
     [-74,40.7],[-87.6,41.8],[-118.2,34],[-122.4,37.8],[-77,38.9],[-104.9,39.7],
     [-95.4,29.7],[-112.1,33.4],[-80.2,25.8],[-90,30],[-73.6,45.5],[-123,49.3],
     [-99.1,19.4],[-79.4,43.7],[-157.8,21.3],[-149.9,61.2],
-    // Europe
     [-0.1,51.5],[2.3,48.9],[13.4,52.5],[37.6,55.8],[18.1,59.3],[10.7,59.9],
     [12.6,55.7],[4.9,52.4],[2.2,41.4],[12.5,41.9],[23.7,37.9],[28.9,41],
     [16.4,48.2],[14.4,50.1],[19.1,47.5],[21,52.2],[24.9,60.2],[25.3,54.7],
-    // Asia
     [103.8,1.3],[114.2,22.3],[121.5,31.2],[116.4,39.9],[139.7,35.7],[126.9,37.5],
     [100.5,13.7],[106.8,10.8],[77.2,28.6],[72.8,18.9],[88.4,22.6],[67.1,24.9],
-    [69.3,41.3],[37.6,55.8],[55.3,25.2],[51.4,35.7],[44.4,33.3],[36.8,34.9],
-    // Africa
+    [69.3,41.3],[55.3,25.2],[51.4,35.7],[44.4,33.3],[36.8,34.9],
     [3.4,6.5],[31,30],[36.8,-1.3],[18.4,-33.9],[28.1,-25.7],[32.6,0.3],
-    [15.3,4.4],[-17.4,14.7],[7.5,9],[38.7,9],[43.1,11.6],
-    // South America
     [-43.2,-22.9],[-58.4,-34.6],[-77.1,-12.1],[-70.7,-33.4],[-74.1,4.7],
-    [-56.2,-34.9],[-47.9,-15.8],[-66.9,-10.8],
-    // Australia/Pacific
     [151.2,-33.9],[144.9,-37.8],[153,-27.5],[172.6,-43.5],[174.8,-36.9],
   ];
-
-  let pulsingDots = [];
-  let dotTimer = 0;
-
-  function project(lng, lat, W, H){
-    const x = (lng + 180) / 360 * W;
-    const latRad = lat * Math.PI / 180;
-    const mercN = Math.log(Math.tan(Math.PI/4 + latRad/2));
-    const y = H/2 - mercN * W / (2*Math.PI);
-    return {x, y};
-  }
-
-  function resize(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
-  resize(); window.addEventListener('resize', resize);
-
-  function draw(){
-    const W = canvas.width, H = canvas.height;
-    ctx.clearRect(0,0,W,H);
-
-    dotTimer++;
-    if(dotTimer % 40 === 0){
-      const c = CITIES[Math.floor(Math.random()*CITIES.length)];
-      pulsingDots.push({lng:c[0],lat:c[1],r:0,maxR:18,life:1});
-    }
-
-    CITIES.forEach(([lng,lat])=>{
-      const {x,y} = project(lng,lat,W,H);
-      ctx.beginPath(); ctx.arc(x,y,1.5,0,Math.PI*2);
-      ctx.fillStyle='rgba(0,212,255,0.5)'; ctx.fill();
-    });
-
-    pulsingDots = pulsingDots.filter(d=>{
-      const {x,y} = project(d.lng,d.lat,W,H);
-      d.r += 0.4; d.life = Math.max(0, 1 - d.r/d.maxR);
-      ctx.beginPath(); ctx.arc(x,y,d.r,0,Math.PI*2);
-      ctx.strokeStyle=`rgba(0,212,255,${(d.life*0.5).toFixed(2)})`; ctx.lineWidth=1; ctx.stroke();
-      return d.r < d.maxR;
-    });
-  }
-
-  setInterval(draw, 40);
-})();
-
-// ── SIGNAL ARCS ───────────────────────────────────────────────
-(function(){
-  const canvas = document.getElementById('arc-canvas');
-  const ctx = canvas.getContext('2d');
-  const CITIES = [
-    [-74,40.7],[-87.6,41.8],[-118.2,34],[-122.4,37.8],[-77,38.9],
-    [-0.1,51.5],[2.3,48.9],[13.4,52.5],[37.6,55.8],[139.7,35.7],
-    [114.2,22.3],[103.8,1.3],[28,41],[30.3,59.9],[18.1,59.3],
-    [72.8,18.9],[77.2,28.6],[88.4,22.6],[126.9,37.5],[151.2,-33.9],
-    [55.3,25.2],[31,30],[36.8,-1.3],[3.4,6.5],[18.4,-33.9],
-    [-43.2,-22.9],[-58.4,-34.6],[-99.1,19.4],[-70.7,-33.4],[28.1,-25.7]
-  ];
-  const COLORS = ['#00d4ff','#00ff41','#f5c842','#ff2d2d','#9b59ff'];
-  let arcs = [];
-
+  let pulsingDots=[]; let dotTimer=0;
+  function project(lng,lat,W,H){ const x=(lng+180)/360*W; const latRad=lat*Math.PI/180; const mercN=Math.log(Math.tan(Math.PI/4+latRad/2)); const y=H/2-mercN*W/(2*Math.PI); return{x,y}; }
   function resize(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
   resize(); window.addEventListener('resize',resize);
-
-  function project(lng,lat){
-    const W=canvas.width,H=canvas.height;
-    const x=(lng+180)/360*W;
-    const latRad=lat*Math.PI/180;
-    const mercN=Math.log(Math.tan(Math.PI/4+latRad/2));
-    const y=H/2-mercN*W/(2*Math.PI);
-    return {x,y};
-  }
-
-  function spawnArc(){
-    let a=Math.floor(Math.random()*CITIES.length);
-    let b=Math.floor(Math.random()*CITIES.length);
-    while(b===a) b=Math.floor(Math.random()*CITIES.length);
-    arcs.push({
-      from:CITIES[a], to:CITIES[b],
-      col:COLORS[Math.floor(Math.random()*COLORS.length)],
-      progress:0, speed:0.008+Math.random()*0.012, life:1
-    });
-  }
-
   function draw(){
-    const W=canvas.width,H=canvas.height;
-    ctx.clearRect(0,0,W,H);
-    arcs=arcs.filter(arc=>{
-      const f=project(arc.from[0],arc.from[1]);
-      const t=project(arc.to[0],arc.to[1]);
-      const mx=(f.x+t.x)/2, my=(f.y+t.y)/2 - Math.hypot(t.x-f.x,t.y-f.y)*0.35;
-      arc.progress=Math.min(1,arc.progress+arc.speed);
-      const p=arc.progress;
-      // Bezier point
-      const bx=(1-p)*(1-p)*f.x+2*(1-p)*p*mx+p*p*t.x;
-      const by=(1-p)*(1-p)*f.y+2*(1-p)*p*my+p*p*t.y;
-      // Trail
-      ctx.beginPath();
-      ctx.moveTo(f.x,f.y);
-      const steps=30;
-      for(let s=0;s<=steps;s++){
-        const sp=p*(s/steps);
-        const tx2=(1-sp)*(1-sp)*f.x+2*(1-sp)*sp*mx+sp*sp*t.x;
-        const ty2=(1-sp)*(1-sp)*f.y+2*(1-sp)*sp*my+sp*sp*t.y;
-        ctx.lineTo(tx2,ty2);
-      }
-      ctx.strokeStyle=arc.col+'33'; ctx.lineWidth=1; ctx.stroke();
-      // Head dot
-      ctx.beginPath(); ctx.arc(bx,by,2.5,0,Math.PI*2);
-      ctx.fillStyle=arc.col; ctx.fill();
-      // Head glow
-      const g=ctx.createRadialGradient(bx,by,0,bx,by,10);
-      g.addColorStop(0,arc.col+'66'); g.addColorStop(1,arc.col+'00');
-      ctx.fillStyle=g; ctx.beginPath(); ctx.arc(bx,by,10,0,Math.PI*2); ctx.fill();
-      return arc.progress < 1;
-    });
+    const W=canvas.width,H=canvas.height; ctx.clearRect(0,0,W,H);
+    dotTimer++; if(dotTimer%50===0){ const c=CITIES[Math.floor(Math.random()*CITIES.length)]; pulsingDots.push({lng:c[0],lat:c[1],r:0,maxR:20,life:1}); }
+    CITIES.forEach(([lng,lat])=>{ const{x,y}=project(lng,lat,W,H); ctx.beginPath(); ctx.arc(x,y,1.5,0,Math.PI*2); ctx.fillStyle='rgba(0,212,255,0.4)'; ctx.fill(); });
+    pulsingDots=pulsingDots.filter(d=>{ const{x,y}=project(d.lng,d.lat,W,H); d.r+=0.5; d.life=Math.max(0,1-d.r/d.maxR); ctx.beginPath(); ctx.arc(x,y,d.r,0,Math.PI*2); ctx.strokeStyle=`rgba(0,212,255,${(d.life*0.4).toFixed(2)})`; ctx.lineWidth=1; ctx.stroke(); return d.r<d.maxR; });
   }
-
-  setInterval(spawnArc, 1800);
-  setInterval(draw, 30);
+  setInterval(draw,40);
 })();
 
-// ── GOAL CHAIN RENDER ─────────────────────────────────────────
-function renderGoalChain(subs){
-  const el = document.getElementById('goal-chain');
-  el.innerHTML = GOALS.map(g=>{
-    if(subs >= g) return `<div class="goal-pip done">${g>=1000?g/1000+'K':g} ✓</div>`;
-    if(g === GOALS.find(x=>x>subs)) return `<div class="goal-pip active">${g>=1000?g/1000+'K':g} ←</div>`;
-    return `<div class="goal-pip">${g>=1000?g/1000+'K':g}</div>`;
-  }).join('');
-}
+// ============================================================
+// SIGNAL ARCS
+// ============================================================
+(function(){
+  const canvas=document.getElementById('arc-canvas'); const ctx=canvas.getContext('2d');
+  const CITIES=[[-74,40.7],[-87.6,41.8],[-118.2,34],[-122.4,37.8],[-77,38.9],[-0.1,51.5],[2.3,48.9],[13.4,52.5],[37.6,55.8],[139.7,35.7],[114.2,22.3],[103.8,1.3],[28,41],[30.3,59.9],[18.1,59.3],[72.8,18.9],[77.2,28.6],[88.4,22.6],[126.9,37.5],[151.2,-33.9],[55.3,25.2],[31,30],[36.8,-1.3],[3.4,6.5],[18.4,-33.9],[-43.2,-22.9],[-58.4,-34.6],[-99.1,19.4],[-70.7,-33.4],[28.1,-25.7]];
+  const COLORS=['#00d4ff','#00ff41','#f5c842','#ff2d2d','#9b59ff'];
+  let arcs=[];
+  function resize(){ canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
+  resize(); window.addEventListener('resize',resize);
+  function project(lng,lat){ const W=canvas.width,H=canvas.height; const x=(lng+180)/360*W; const latRad=lat*Math.PI/180; const mercN=Math.log(Math.tan(Math.PI/4+latRad/2)); const y=H/2-mercN*W/(2*Math.PI); return{x,y}; }
+  function spawnArc(){ let a=Math.floor(Math.random()*CITIES.length),b=Math.floor(Math.random()*CITIES.length); while(b===a)b=Math.floor(Math.random()*CITIES.length); arcs.push({from:CITIES[a],to:CITIES[b],col:COLORS[Math.floor(Math.random()*COLORS.length)],progress:0,speed:0.007+Math.random()*0.01}); }
+  function draw(){
+    const W=canvas.width,H=canvas.height; ctx.clearRect(0,0,W,H);
+    arcs=arcs.filter(arc=>{ const f=project(arc.from[0],arc.from[1]); const t=project(arc.to[0],arc.to[1]); const mx=(f.x+t.x)/2,my=(f.y+t.y)/2-Math.hypot(t.x-f.x,t.y-f.y)*0.35; arc.progress=Math.min(1,arc.progress+arc.speed); const p=arc.progress; const bx=(1-p)*(1-p)*f.x+2*(1-p)*p*mx+p*p*t.x; const by=(1-p)*(1-p)*f.y+2*(1-p)*p*my+p*p*t.y; ctx.beginPath(); ctx.moveTo(f.x,f.y); const steps=30; for(let s=0;s<=steps;s++){ const sp=p*(s/steps); const tx2=(1-sp)*(1-sp)*f.x+2*(1-sp)*sp*mx+sp*sp*t.x; const ty2=(1-sp)*(1-sp)*f.y+2*(1-sp)*sp*my+sp*sp*t.y; ctx.lineTo(tx2,ty2); } ctx.strokeStyle=arc.col+'22'; ctx.lineWidth=1; ctx.stroke(); ctx.beginPath(); ctx.arc(bx,by,2,0,Math.PI*2); ctx.fillStyle=arc.col; ctx.fill(); const g=ctx.createRadialGradient(bx,by,0,bx,by,8); g.addColorStop(0,arc.col+'55'); g.addColorStop(1,arc.col+'00'); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(bx,by,8,0,Math.PI*2); ctx.fill(); return arc.progress<1; });
+  }
+  setInterval(spawnArc,2000); setInterval(draw,30);
+})();
 
-// ── NEW SUB FLASH ─────────────────────────────────────────────
-function triggerNewSub(count){
-  playNewSub();
-  const el = document.getElementById('newsub-overlay');
-  el.querySelector('.newsub-text').textContent = `+${count} SUBSCRIBER${count>1?'S':''}`;
-  el.classList.remove('fire');
-  void el.offsetWidth;
-  el.classList.add('fire');
+// ============================================================
+// COUNTDOWN TIMER
+// ============================================================
+function updateCountdown(){
+  const now = new Date();
+  const diff = LAUNCH_DATE - now;
 
-  // Expanding rings
-  ['ring1','ring2'].forEach((id,i)=>{
-    const r = document.getElementById(id);
-    r.style.animation='none'; void r.offsetWidth;
-    r.style.animation=`ring-expand ${0.8+i*0.4}s ease ${i*0.15}s forwards`;
-  });
-
-  setTimeout(()=>el.classList.remove('fire'), 2600);
-}
-
-// ── MILESTONE FLASH ───────────────────────────────────────────
-function triggerMilestone(n){
-  const m = MILESTONE_MSGS[n];
-  if(!m) return;
-  playMilestone();
-  const el = document.getElementById('milestone-overlay');
-  const txt = document.getElementById('milestone-text');
-  const sub = document.getElementById('milestone-sub');
-  txt.textContent = m.text;
-  txt.style.color = m.color;
-  txt.style.textShadow = `0 0 60px ${m.color}88, 0 0 120px ${m.color}44`;
-  sub.textContent = m.sub;
-  el.classList.remove('fire');
-  void el.offsetWidth;
-  el.classList.add('fire');
-  setTimeout(()=>el.classList.remove('fire'), 4100);
-}
-
-// ── DISPLAY UPDATE ────────────────────────────────────────────
-function updateDisplay(subs, videoCount, viewCount, latestTitle){
-  // Sub count
-  const el = document.getElementById('sub-count');
-  const prev = prevSubs;
-
-  if(prev !== null && subs > prev){
-    const diff = subs - prev;
-    triggerNewSub(diff);
-    sessionGain += diff;
-
-    // Check milestones
-    for(let n of [25,50,100,500,1000,5000,10000]){
-      if(subs >= n && prev < n && !firedMilestones.has(n)){
-        firedMilestones.add(n);
-        setTimeout(()=>triggerMilestone(n), 1200);
-      }
-    }
+  if(diff <= 0){
+    // ============================================================
+    // LAUNCHED! — change this message when the game goes live
+    // ============================================================
+    document.getElementById('cd-days').textContent  = '00';
+    document.getElementById('cd-hours').textContent = '00';
+    document.getElementById('cd-mins').textContent  = '00';
+    document.getElementById('cd-secs').textContent  = '00';
+    document.querySelector('.classified-text').textContent = 'ACCESS GRANTED — GENESIS IS LIVE';
+    document.querySelector('.classified-dot').style.background = 'var(--green)';
+    document.querySelector('.countdown-label').textContent = 'GENESIS IS NOW LIVE';
+    return;
   }
 
-  if(prevSubs === null) sessionStart = subs;
-  prevSubs = subs;
+  const days  = Math.floor(diff / (1000*60*60*24));
+  const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+  const mins  = Math.floor((diff % (1000*60*60)) / (1000*60));
+  const secs  = Math.floor((diff % (1000*60)) / 1000);
 
-  el.classList.remove('tick'); void el.offsetWidth; el.classList.add('tick');
+  const setNum = (id, val) => {
+    const el = document.getElementById(id);
+    const str = String(val).padStart(2,'0');
+    if(el.textContent !== str){
+      el.textContent = str;
+      el.classList.remove('tick');
+      void el.offsetWidth;
+      el.classList.add('tick');
+    }
+  };
+
+  setNum('cd-days',  days);
+  setNum('cd-hours', hours);
+  setNum('cd-mins',  mins);
+  setNum('cd-secs',  secs);
+
+  // Launch progress bar — % of total countdown elapsed
+  // ============================================================
+  // TOTAL DURATION: 42 days (6 weeks) — change if you set a different launch date
+  // ============================================================
+  const totalDuration = 42 * 24 * 60 * 60 * 1000;
+  const elapsed = totalDuration - diff;
+  const pct = Math.min(Math.max((elapsed / totalDuration) * 100, 0), 100);
+  document.getElementById('launch-fill').style.width = pct + '%';
+  document.getElementById('launch-pct').textContent = pct.toFixed(1) + '%';
+}
+
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+// ============================================================
+// YOUTUBE SUB COUNTER
+// ============================================================
+async function fetchSubs(){
+  try {
+    const res  = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${CHANNEL_ID}&key=${API_KEY}`);
+    const data = await res.json();
+    if(data.error){ console.warn('API error:', data.error.message); return; }
+
+    const subs = parseInt(data.items[0].statistics.subscriberCount, 10);
+    updateSubs(subs);
+  } catch(e) {
+    console.warn('Fetch error:', e);
+  }
+}
+
+function updateSubs(subs){
+  const el = document.getElementById('sub-count');
+  if(prevSubs !== null && subs !== prevSubs){
+    el.classList.remove('tick'); void el.offsetWidth; el.classList.add('tick');
+  }
+  prevSubs = subs;
   el.textContent = subs.toLocaleString();
 
-  document.getElementById('sub-count-sm').textContent = subs.toLocaleString();
-  document.getElementById('gained').textContent = sessionGain > 0 ? '+' + sessionGain : sessionGain;
-  document.getElementById('view-count').textContent = formatBig(viewCount);
-  document.getElementById('video-count').textContent = videoCount.toLocaleString();
-  document.getElementById('latest-title').textContent = latestTitle || '—';
-
   // Goal progress
-  const currentGoal = GOALS.find(g=>g>subs) || GOALS[GOALS.length-1];
-  const prevGoal = GOALS[GOALS.indexOf(currentGoal)-1] || 0;
-  const pct = Math.min(((subs - prevGoal)/(currentGoal - prevGoal))*100, 100);
-  document.getElementById('progress-fill').style.width = pct+'%';
-  document.getElementById('goal-pct').textContent = pct.toFixed(1)+'%';
-  document.getElementById('goal-label').textContent = `OPERATION: ${currentGoal>=1000?currentGoal/1000+'K':currentGoal} SUBS`;
-  const remaining = Math.max(currentGoal - subs, 0);
-  document.getElementById('needed-label').textContent = remaining > 0 ? `${remaining} REMAINING` : '✓ GOAL REACHED';
+  const pct = Math.min((subs / SUB_GOAL) * 100, 100);
+  document.getElementById('sub-fill').style.width = pct + '%';
+  document.getElementById('sub-pct').textContent = pct.toFixed(1) + '%';
 
-  renderGoalChain(subs);
+  const needed = Math.max(SUB_GOAL - subs, 0);
+  document.getElementById('sub-needed').textContent = needed > 0 ? needed + ' to go' : '✓ GOAL REACHED!';
+  document.getElementById('goal-label').textContent = SUB_GOAL;
 
-  const now = new Date();
-  document.getElementById('last-sync').textContent =
-    `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
-
-  document.getElementById('error-msg') && (document.getElementById('error-msg').style.display='none');
-  document.getElementById('status-dot').className = 's-dot';
-  document.getElementById('status-val').textContent = 'ONLINE';
-
-  playSync();
-  countdown = INTERVAL;
+  countdown = SYNC_INTERVAL;
 }
 
-function formatBig(n){
-  if(!n) return '––';
-  n = parseInt(n);
-  if(n >= 1000000) return (n/1000000).toFixed(1)+'M';
-  if(n >= 1000)    return (n/1000).toFixed(1)+'K';
-  return n.toLocaleString();
-}
-
-// ── FETCH ─────────────────────────────────────────────────────
-async function fetchAll(){
-  try{
-    // Channel stats
-    const chanRes = await fetch(
-      `https://www.googleapis.com/youtube/v3/channels?part=statistics&id=${CHANNEL_ID}&key=${API_KEY}`
-    );
-    const chanData = await chanRes.json();
-    if(chanData.error){ setError(chanData.error.message); return; }
-    const stats = chanData.items[0].statistics;
-    const subs   = parseInt(stats.subscriberCount,10);
-    const views  = parseInt(stats.viewCount,10);
-    const videos = parseInt(stats.videoCount,10);
-
-    // Latest video
-    const vidRes = await fetch(
-      `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${CHANNEL_ID}&order=date&maxResults=1&type=video&key=${API_KEY}`
-    );
-    const vidData = await vidRes.json();
-    const latestTitle = vidData.items?.[0]?.snippet?.title || '—';
-
-    updateDisplay(subs, videos, views, latestTitle);
-  }catch(e){
-    setError('SIGNAL LOST');
-  }
-}
-
-function setError(msg){
-  document.getElementById('status-dot').className = 's-dot red';
-  document.getElementById('status-val').textContent = 'ERROR';
-  console.warn('API error:', msg);
-}
-
-// ── COUNTDOWN ─────────────────────────────────────────────────
+// Sync countdown display
 setInterval(()=>{
   countdown--;
-  if(countdown<=0) countdown=INTERVAL;
-  document.getElementById('next-update').textContent = `SYNC IN ${String(countdown).padStart(2,'0')}s`;
+  if(countdown <= 0) countdown = SYNC_INTERVAL;
+  document.getElementById('next-sync').textContent = `SYNC IN ${String(countdown).padStart(2,'0')}s`;
 }, 1000);
 
-// ── INIT ──────────────────────────────────────────────────────
-// Unlock audio on first interaction
-document.addEventListener('click', ()=>{ if(AC.state==='suspended') AC.resume(); }, {once:true});
-document.addEventListener('keydown', ()=>{ if(AC.state==='suspended') AC.resume(); }, {once:true});
-
-fetchAll();
-setInterval(fetchAll, INTERVAL * 1000);
+fetchSubs();
+setInterval(fetchSubs, SYNC_INTERVAL * 1000);
 </script>
 </body>
 </html>
