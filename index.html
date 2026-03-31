@@ -21,11 +21,12 @@
 }
 
 html,body{
-  width:100%;height:100%;
+  width:100%;min-height:100%;
   background:#000;
   color:#fff;
   font-family:'Share Tech Mono',monospace;
-  overflow:hidden;
+  overflow-x:hidden;
+  overflow-y:auto;
   user-select:none;
 }
 
@@ -78,14 +79,20 @@ html,body{
 
 /* ── SLIDE SYSTEM ── */
 .slides-wrap{
-  position:fixed;inset:0;z-index:10;
+  position:relative;
+  width:100%;
+  height:100vh;
+  min-height:600px;
+  z-index:10;
 }
 
 .slide{
-  position:absolute;inset:0;
+  position:absolute;
+  top:0;left:0;right:0;
+  min-height:100vh;
   display:flex;flex-direction:column;
   align-items:center;justify-content:center;
-  padding:80px 120px;
+  padding:clamp(60px,8vh,100px) clamp(20px,8vw,120px) clamp(60px,8vh,100px);
   opacity:0;
   transition:opacity 0.8s ease;
   pointer-events:none;
@@ -95,28 +102,42 @@ html,body{
 /* ── SLIDE PROGRESS BAR ── */
 .progress-bar{
   position:fixed;bottom:40px;left:50%;transform:translateX(-50%);
-  display:flex;gap:8px;z-index:30;
+  display:flex;gap:6px;z-index:30;
+  flex-wrap:wrap;justify-content:center;
+  max-width:90vw;
 }
 .prog-dot{
-  width:28px;height:2px;
+  width:clamp(16px,2.5vw,28px);height:2px;
   background:rgba(255,45,45,0.2);
-  transition:background 0.4s ease,width 0.4s ease;
+  transition:background 0.4s ease;
 }
 .prog-dot.active{background:var(--red);box-shadow:0 0 8px rgba(255,45,45,0.6);}
 .prog-dot.done{background:rgba(255,45,45,0.5);}
 
 /* ── SLIDE NAV ── */
 .slide-nav{
-  position:fixed;bottom:52px;right:28px;
-  display:flex;gap:10px;z-index:30;
+  position:fixed;bottom:52px;right:clamp(10px,2vw,28px);
+  display:flex;gap:8px;z-index:30;
 }
 .nav-btn{
   background:transparent;border:1px solid rgba(255,45,45,0.3);
   color:rgba(255,45,45,0.6);font-family:'Share Tech Mono',monospace;
-  font-size:9px;letter-spacing:2px;padding:6px 12px;cursor:pointer;
+  font-size:clamp(7px,1.2vw,9px);letter-spacing:2px;
+  padding:clamp(4px,0.8vh,6px) clamp(8px,1.2vw,12px);cursor:pointer;
   transition:all 0.2s ease;
 }
 .nav-btn:hover{border-color:var(--red);color:var(--red);box-shadow:0 0 12px rgba(255,45,45,0.3);}
+
+/* ── MOBILE SWIPE HINT ── */
+.swipe-hint{
+  position:fixed;bottom:56px;left:50%;transform:translateX(-50%);
+  font-size:7px;letter-spacing:3px;color:rgba(255,255,255,0.15);
+  z-index:30;display:none;white-space:nowrap;
+}
+@media(max-width:600px){
+  .swipe-hint{display:block;}
+  .slide-nav{display:none;}
+}
 
 /* ── TYPOGRAPHY ── */
 .slide-eyebrow{
@@ -389,6 +410,42 @@ html,body{
   0%,100%{box-shadow:0 0 0 0 rgba(255,45,45,0);}
   50%{box-shadow:0 0 0 4px rgba(255,45,45,0.15);}
 }
+
+/* ── MOBILE RESPONSIVE ── */
+@media(max-width:768px){
+  .hud-top{font-size:7px;letter-spacing:1px;left:40px;right:40px;}
+  .hud-bot{font-size:6px;left:40px;right:40px;}
+  .corner{width:22px;height:22px;}
+  .slide{padding:56px 20px 72px;}
+  .hr-card{padding:16px 18px;}
+  .hr-text{font-size:12px;}
+  .stat-grid{gap:8px;}
+  .stat-val{font-size:20px;}
+  .stat-lbl{font-size:6px;}
+  .tier-row{padding:7px 10px;font-size:10px;}
+  .cert-grid{grid-template-columns:1fr;}
+  .cert-item{padding:9px 12px;}
+  .cert-name{font-size:10px;}
+  .countdown-wrap{gap:16px;}
+  .cd-num{font-size:36px;min-width:48px;}
+  .ticker{height:22px;}
+  .ticker-inner{font-size:6px;}
+  .final-genesis{font-size:clamp(56px,18vw,90px);}
+  .sub-btn{font-size:9px;letter-spacing:2px;padding:12px 24px;}
+}
+@media(max-width:480px){
+  .slide-title{font-size:clamp(28px,8vw,48px);}
+  .slide-title.huge{font-size:clamp(38px,11vw,60px);}
+  .slide-body{font-size:12px;}
+  .hr-text{font-size:11px;line-height:1.7;}
+  .stat-grid{grid-template-columns:repeat(3,1fr);}
+  .stat-val{font-size:16px;}
+  .countdown-wrap{gap:10px;}
+  .cd-num{font-size:28px;min-width:38px;}
+  .cd-sep{font-size:20px;}
+  .hud-top .right-hud{display:none;}
+  .final-genesis{font-size:clamp(48px,16vw,80px);}
+}
 </style>
 </head>
 <body>
@@ -650,6 +707,7 @@ html,body{
 
 <!-- Progress dots -->
 <div class="progress-bar" id="progress-bar"></div>
+<div class="swipe-hint">← SWIPE TO NAVIGATE →</div>
 
 <!-- Nav -->
 <div class="slide-nav">
@@ -710,7 +768,7 @@ updateCountdown();
 // SLIDE SYSTEM
 // ============================================================
 const TOTAL_SLIDES = 9;
-const AUTO_ADVANCE = 9000; // 7s per slide
+const AUTO_ADVANCE = 9000; // 9s per slide — stops at last slide
 let currentSlide  = 0;
 let autoTimer     = null;
 
@@ -742,20 +800,42 @@ function goToSlide(n){
   resetAuto();
 }
 
-function nextSlide(){ goToSlide(currentSlide===TOTAL_SLIDES-1?0:currentSlide+1); }
-function prevSlide(){ goToSlide(currentSlide===0?TOTAL_SLIDES-1:currentSlide-1); }
+function nextSlide(){
+  if(currentSlide < TOTAL_SLIDES-1) goToSlide(currentSlide+1);
+  // Stop at last slide — no loop
+}
+function prevSlide(){ goToSlide(Math.max(0,currentSlide-1)); }
 
 function resetAuto(){
   clearInterval(autoTimer);
-  autoTimer = setInterval(()=>{
-    goToSlide(currentSlide===TOTAL_SLIDES-1?0:currentSlide+1);
-  },AUTO_ADVANCE);
+  // Only schedule next if not on last slide
+  if(currentSlide < TOTAL_SLIDES-1){
+    autoTimer = setInterval(()=>{
+      if(currentSlide < TOTAL_SLIDES-1){
+        goToSlide(currentSlide+1);
+      } else {
+        clearInterval(autoTimer);
+      }
+    },AUTO_ADVANCE);
+  }
 }
 
 // Keyboard nav
 document.addEventListener('keydown',e=>{
   if(e.key==='ArrowRight'||e.key==='ArrowDown') nextSlide();
   if(e.key==='ArrowLeft'||e.key==='ArrowUp')    prevSlide();
+});
+
+// Touch swipe
+let touchStartX=0, touchStartY=0;
+document.addEventListener('touchstart',e=>{ touchStartX=e.touches[0].clientX; touchStartY=e.touches[0].clientY; },{passive:true});
+document.addEventListener('touchend',e=>{
+  const dx=e.changedTouches[0].clientX-touchStartX;
+  const dy=e.changedTouches[0].clientY-touchStartY;
+  if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>40){
+    if(dx<0) nextSlide();
+    else     prevSlide();
+  }
 });
 
 updateDots();
